@@ -1,8 +1,11 @@
-const Sequelize = require('sequelize')
-const sequelize = require('../config/db')
+const sequelize = require('../config/db');
+const User = require('./User');
+const Lead = require('./Lead');
+const Project = require('./Project');
 
-const User = require('./User')(sequelize)
-const Lead = require('./Lead')(sequelize)
-const Project = require('./Project')(sequelize)
+// register models (calling factory functions)
+User(sequelize);
+Lead(sequelize);
+Project(sequelize);
 
-module.exports = { sequelize, User, Lead, Project }
+module.exports = { sequelize };
