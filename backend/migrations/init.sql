@@ -1,0 +1,32 @@
+-- Create tables and an admin user via the API or with hashed password.
+CREATE TABLE IF NOT EXISTS "Users" (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
+  "passwordHash" VARCHAR(255),
+  role VARCHAR(50) DEFAULT 'admin',
+  "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "Leads" (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255),
+  phone VARCHAR(50),
+  city VARCHAR(255),
+  notes TEXT,
+  status VARCHAR(50) DEFAULT 'new',
+  "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "Projects" (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255),
+  city VARCHAR(255),
+  size_kw FLOAT,
+  image VARCHAR(1024),
+  notes TEXT,
+  "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
