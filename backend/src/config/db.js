@@ -1,15 +1,16 @@
-const { Sequelize } = require('sequelize')
-const path = require('path')
+require('dotenv').config();
+const { Sequelize } = require('sequelize');
 
-const databaseUrl = process.env.DATABASE_URL
-let sequelize
-if (databaseUrl) {
-	sequelize = new Sequelize(databaseUrl, { dialect: 'postgres', logging: false })
-} else {
-	// fallback to a file-based sqlite DB for local development so data persists between restarts
-	const storagePath = path.join(__dirname, '../../backend_dev.sqlite')
-	sequelize = new Sequelize({ dialect: 'sqlite', storage: storagePath, logging: false })
-	console.log('No DATABASE_URL set — using file sqlite at', storagePath)
-}
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: "postgres",
+    port: process.env.DB_PORT || 5432,
+    logging: false,
+  }
+);
 
-module.exports = sequelize
+module.exports = { sequelize };
