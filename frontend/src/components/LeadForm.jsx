@@ -14,6 +14,7 @@ export default function LeadForm() {
   const [form, setForm] = useState(initialForm)
   const [attachment, setAttachment] = useState(null)
   const [status, setStatus] = useState(null)
+  const [statusMessage, setStatusMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
   const updateField = (field, value) => {
@@ -53,9 +54,8 @@ export default function LeadForm() {
         Object.entries(form).forEach(([key, value]) => formData.append(key, value))
         formData.append('attachment', attachment)
 
-        await axios.post('/api/leads', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
+        // Let the browser set the Content-Type (includes boundary). Do not set it manually.
+        await axios.post('/api/leads', formData)
       } else {
         // No file: send JSON
         await axios.post('/api/leads', { ...form })
@@ -66,6 +66,10 @@ export default function LeadForm() {
       setAttachment(null)
     } catch (err) {
       console.error('Submit error:', err)
+
+      // Prefer a helpful server message when available
+      const serverMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Something went wrong'
+      setStatusMessage(serverMessage)
       setStatus('error')
     } finally {
       setLoading(false)
@@ -169,7 +173,8 @@ export default function LeadForm() {
       )}
       {status === 'error' && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Something went wrong. Please call +91 96943 26431 or try again.
+          <div>Something went wrong. Please call +91 96943 26431 or try again.</div>
+          {statusMessage && <div className="mt-1 text-xs text-red-600">{statusMessage}</div>}
         </div>
       )}
     </form>
