@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import { uploadFileToFirebase } from '../lib/firebase'
 
 const initialForm = {
   name: '',
@@ -21,14 +22,25 @@ export default function LeadForm() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const uploadToCloudinary = async (file) => {
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+  // Firebase config and helper
+  const firebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY && !!import.meta.env.VITE_FIREBASE_PROJECT_ID && !!import.meta.env.VITE_FIREBASE_STORAGE_BUCKET
 
-    if (!cloudName || !uploadPreset) {
+  const uploadToFirebase = async (file) => {
+    if (!firebaseConfigured) {
+      throw new Error('Firebase is not configured. Set VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID and VITE_FIREBASE_STORAGE_BUCKET')
+    }
+    return uploadFileToFirebase(file)
+  }
+
+  // Cloudinary (client-side) fallback
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+  const cloudConfigured = !!cloudName && !!uploadPreset
+
+  const uploadToCloudinary = async (file) => {
+    if (!cloudConfigured) {
       throw new Error('Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET')
     }
-
     const data = new FormData()
     data.append('file', file)
     data.append('upload_preset', uploadPreset)
@@ -43,20 +55,80 @@ export default function LeadForm() {
     return json.secure_url
   }
 
+  function normalizeError(err) {
+    if (!err) return 'Unknown error'
+    const status = err?.response?.status
+    const data = err?.response?.data
+
+    if (data) {
+      if (typeof data === 'string') return status ? `(${status}) ${data}` : data
+      if (typeof data === 'object') {
+        if (data.message) return status ? `(${status}) ${data.message}` : data.message
+        if (data.error) {
+          if (typeof data.error === 'string') return status ? `(${status}) ${data.error}` : data.error
+          if (data.error?.message) return status ? `(${status}) ${data.error.message}` : data.error.message
+        }
+        try {
+          return status ? `(${status}) ${JSON.stringify(data)}` : JSON.stringify(data)
+        } catch {
+          return status ? `(${status}) Response contained circular data` : 'Response contained circular data'
+        }
+      }
+    }
+
+    const base = err?.message || 'An unknown error occurred'
+    return status ? `(${status}) ${base}` : base
+  }
+
   const submit = async (e) => {
     e.preventDefault()
     setStatus(null)
     setLoading(true)
     try {
+      // Prevent submission if a file is attached but neither Firebase nor Cloudinary is configured
+      if (attachment && !firebaseConfigured && !cloudConfigured) {
+        setStatusMessage('File uploads are disabled. Remove attachment or configure Firebase Storage (VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_STORAGE_BUCKET) or Cloudinary (VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET).')
+        setStatus('error')
+        setLoading(false)
+        return
+      }
+
       let payload = { ...form }
 
       if (attachment) {
-        // Upload to Cloudinary client-side and send the returned URL in JSON
+        // Prefer Firebase client-side upload; fall back to Cloudinary, then to server multipart upload if CORS or other client upload fails
         try {
-          const url = await uploadToCloudinary(attachment)
-          payload.attachment = url
+          let url
+          if (firebaseConfigured) {
+            try {
+              url = await uploadToFirebase(attachment)
+            } catch (firebaseErr) {
+              // Likely CORS or rules issue — attempt server-side multipart upload as a fallback
+              console.warn('Firebase upload failed, attempting server-side multipart fallback:', firebaseErr)
+
+              const fd = new FormData()
+              Object.entries(payload).forEach(([k, v]) => fd.append(k, v || ''))
+              // Append under 'attachment' so backend's multer receives it (upload.single('attachment'))
+              fd.append('attachment', attachment)
+
+              // Let Axios set the Content-Type and boundary automatically
+              const serverRes = await axios.post('/api/leads', fd)
+
+              // Server handled the upload and lead creation
+              setStatus('success')
+              setForm(initialForm)
+              setAttachment(null)
+              setStatusMessage('Submitted (uploaded via server fallback).')
+              return
+            }
+          } else {
+            url = await uploadToCloudinary(attachment)
+          }
+
+          // If we get a URL from client upload, attach it to the JSON payload
+          if (url) payload.attachment = url
         } catch (uploadErr) {
-          console.error('Cloudinary upload failed:', uploadErr)
+          console.error('File upload failed:', uploadErr)
           setStatusMessage('File upload failed. You can try again without an attachment or contact support.')
           setStatus('error')
           setLoading(false)
@@ -74,25 +146,7 @@ export default function LeadForm() {
       console.error('Submit error:', err)
       console.error('Server response data:', err?.response?.data)
 
-      // Normalize server response into a readable string to avoid React rendering errors
-      const data = err?.response?.data
-      let serverMessage = ''
-
-      if (data) {
-        if (typeof data === 'string') serverMessage = data
-        else if (typeof data === 'object') {
-          if (data.message) serverMessage = data.message
-          else if (data.error) serverMessage = typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error))
-          else serverMessage = JSON.stringify(data)
-        }
-      }
-
-      if (!serverMessage) serverMessage = err?.message || 'Something went wrong'
-
-      // Include HTTP status code if present
-      const statusCode = err?.response?.status
-      if (statusCode) serverMessage = `(${statusCode}) ${serverMessage}`
-
+      const serverMessage = normalizeError(err).slice(0, 500)
       setStatusMessage(serverMessage)
       setStatus('error')
     } finally {
@@ -181,6 +235,9 @@ export default function LeadForm() {
           onChange={(e) => setAttachment(e.target.files?.[0] || null)}
           className="mt-1 w-full cursor-pointer rounded-xl border border-dashed border-slate-300 bg-white px-3 py-3 text-[0.9rem] text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-exdellsBlue/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-exdellsBlue hover:border-exdellsBlue/50"
         />
+        {(!firebaseConfigured && !cloudConfigured) && (
+          <div className="mt-2 text-xs text-yellow-700">⚠️ File upload disabled: configure Firebase Storage or Cloudinary to enable attachments. Add <code>VITE_FIREBASE_API_KEY</code>, <code>VITE_FIREBASE_PROJECT_ID</code>, and <code>VITE_FIREBASE_STORAGE_BUCKET</code> (or <code>VITE_CLOUDINARY_CLOUD_NAME</code> and <code>VITE_CLOUDINARY_UPLOAD_PRESET</code>) to your frontend environment and restart the dev server.</div>
+        )}
       </div>
 
       <button

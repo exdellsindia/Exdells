@@ -68,7 +68,9 @@ Temporary serverless / instant email option (recommended to get emails quickly):
      - `EMAIL_TO=info@exdells.com`
      - `EMAIL_FROM="Exdells Website" <no-reply@exdells.com>`
   3. Optionally add `BACKEND_URL` to forward leads to the backend once deployed.
-- Alternatively, add `VITE_CLOUDINARY_CLOUD_NAME` and `VITE_CLOUDINARY_UPLOAD_PRESET` to the frontend if you want client-side uploads (the form will upload files to Cloudinary and send the file URL to the serverless function).
+- Alternatively, add Firebase Storage client-side upload by creating a Firebase project and adding the following environment variables to the frontend (see `frontend/.env.example`):
+  - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_APP_ID`
+  - Set Storage rules for your bucket appropriately (for quick testing you can allow client uploads to `leads/*`, but for production prefer authenticated or secure upload approaches).
 \
 ## Production deployment (suggested)
 
