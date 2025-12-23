@@ -46,7 +46,21 @@ router.post('/', upload.single('attachment'), async (req, res) => {
       attachmentUrl = await uploadBufferToCloudinary(req.file.buffer, req.file.mimetype)
     } else if (req.body.attachment) {
       // If client sent a string URL for attachment, accept it
-      attachmentUrl = req.body.attachment
+      const att = req.body.attachment
+
+      // If the client sent a data URI (e.g., 'data:image/png;base64,...'), upload it to Cloudinary
+      if (typeof att === 'string' && att.startsWith('data:')) {
+        try {
+          console.log('Uploading data URI attachment to Cloudinary (server-side)')
+          const result = await cloudinary.uploader.upload(att, { folder: 'leads' })
+          attachmentUrl = result.secure_url
+        } catch (uploadErr) {
+          console.error('Server-side Cloudinary upload of data URI failed:', uploadErr)
+          return res.status(500).json({ error: 'Server upload failed', message: uploadErr.message })
+        }
+      } else {
+        attachmentUrl = att
+      }
     }
 
     const lead = await Lead.create({

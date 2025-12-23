@@ -103,23 +103,76 @@ export default function LeadForm() {
             try {
               url = await uploadToFirebase(attachment)
             } catch (firebaseErr) {
-              // Likely CORS or rules issue — attempt server-side multipart upload as a fallback
-              console.warn('Firebase upload failed, attempting server-side multipart fallback:', firebaseErr)
+              // Likely CORS or rules issue — attempt server-side JSON data-URI upload first, then multipart if needed
+              console.warn('Firebase upload failed, attempting server-side data-URI fallback:', firebaseErr)
 
-              const fd = new FormData()
-              Object.entries(payload).forEach(([k, v]) => fd.append(k, v || ''))
-              // Append under 'attachment' so backend's multer receives it (upload.single('attachment'))
-              fd.append('attachment', attachment)
+              // Quick check: ensure backend is reachable before converting a potentially-large file
+              try {
+                await axios.get('/health', { timeout: 2000 })
+              } catch (pingErr) {
+                console.warn('Backend health check failed, skipping server fallback:', pingErr)
+                setStatusMessage('Backend is not reachable. Try submitting without an attachment, or start the backend (cd backend && npm run dev).')
+                setStatus('error')
+                setLoading(false)
+                return
+              }
 
-              // Let Axios set the Content-Type and boundary automatically
-              const serverRes = await axios.post('/api/leads', fd)
+              // Convert file to data URI
+              const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onload = () => resolve(reader.result)
+                reader.onerror = (e) => reject(e)
+                reader.readAsDataURL(file)
+              })
 
-              // Server handled the upload and lead creation
-              setStatus('success')
-              setForm(initialForm)
-              setAttachment(null)
-              setStatusMessage('Submitted (uploaded via server fallback).')
-              return
+              let dataUri
+              try {
+                dataUri = await fileToDataUrl(attachment)
+              } catch (convErr) {
+                console.error('File -> dataURI conversion failed:', convErr)
+                throw firebaseErr // allow outer handler to process
+              }
+
+              try {
+                // POST JSON with data URI attachment; backend will upload it to Cloudinary server-side
+                await axios.post('/api/leads', { ...payload, attachment: dataUri })
+
+                setStatus('success')
+                setForm(initialForm)
+                setAttachment(null)
+                setStatusMessage('Submitted (uploaded via server fallback).')
+                return
+              } catch (backendErr) {
+                console.warn('Server-side data-URI fallback failed, will attempt multipart:', backendErr)
+                // If server-side JSON fails, try multipart as a last resort
+                try {
+                  const fd = new FormData()
+                  Object.entries(payload).forEach(([k, v]) => fd.append(k, v || ''))
+                  fd.append('attachment', attachment)
+
+                  // Let Axios set the Content-Type and boundary automatically
+                  await axios.post('/api/leads', fd)
+
+                  setStatus('success')
+                  setForm(initialForm)
+                  setAttachment(null)
+                  setStatusMessage('Submitted (uploaded via server fallback).')
+                  return
+                } catch (multipartErr) {
+                  console.error('Backend multipart fallback failed:', multipartErr)
+
+                  // Distinguish network / unreachable server vs server error
+                  if (multipartErr?.request && !multipartErr?.response) {
+                    setStatusMessage('Server unreachable: your backend is not running or not reachable at /api. Start the backend (cd backend && npm run dev) or deploy the API. You can still submit without an attachment.')
+                  } else {
+                    setStatusMessage(normalizeError(multipartErr).slice(0, 500))
+                  }
+
+                  setStatus('error')
+                  setLoading(false)
+                  return
+                }
+              }
             }
           } else {
             url = await uploadToCloudinary(attachment)
