@@ -64,7 +64,7 @@ export default function LeadForm() {
         }
       }
 
-      await axios.post('/api/leads', payload)
+      await axios.post('/api/leads', payload, { headers: { 'Content-Type': 'application/json' } })
 
 
       setStatus('success')

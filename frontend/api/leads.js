@@ -30,9 +30,34 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method Not Allowed' })
   }
 
-  const payload = (req.body && Object.keys(req.body).length) ? req.body : null
+  // Robustly parse body: accept JSON, URL-encoded, or raw JSON string
+  let payload = (req.body && Object.keys(req.body).length) ? req.body : null
+  const contentType = req.headers['content-type'] || ''
+
   if (!payload) {
-    return res.status(400).json({ error: 'Invalid or empty JSON body' })
+    // Try to parse string bodies
+    const raw = typeof req.body === 'string' ? req.body : ''
+    if (raw && raw.trim()) {
+      // Try JSON
+      try {
+        payload = JSON.parse(raw)
+      } catch (e) {
+        // Try URLSearchParams
+        try {
+          const params = new URLSearchParams(raw)
+          const obj = {}
+          for (const [k, v] of params) obj[k] = v
+          payload = obj
+        } catch (e2) {
+          // give up
+        }
+      }
+    }
+  }
+
+  if (!payload || Object.keys(payload).length === 0) {
+    console.error('Invalid or empty body received at /api/leads', { contentType, bodyPreview: (req.body && req.body.toString) ? req.body.toString().slice(0,200) : String(req.body) })
+    return res.status(400).json({ error: 'Invalid or empty JSON body', details: { contentType, bodyPresent: !!req.body } })
   }
 
   const { name, phone, email, city, notes, capacity } = payload
