@@ -66,9 +66,27 @@ export default function LeadForm() {
       setAttachment(null)
     } catch (err) {
       console.error('Submit error:', err)
+      console.error('Server response data:', err?.response?.data)
 
-      // Prefer a helpful server message when available
-      const serverMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Something went wrong'
+      // Normalize server response into a readable string to avoid React rendering errors
+      const data = err?.response?.data
+      let serverMessage = ''
+
+      if (data) {
+        if (typeof data === 'string') serverMessage = data
+        else if (typeof data === 'object') {
+          if (data.message) serverMessage = data.message
+          else if (data.error) serverMessage = typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error))
+          else serverMessage = JSON.stringify(data)
+        }
+      }
+
+      if (!serverMessage) serverMessage = err?.message || 'Something went wrong'
+
+      // Include HTTP status code if present
+      const statusCode = err?.response?.status
+      if (statusCode) serverMessage = `(${statusCode}) ${serverMessage}`
+
       setStatusMessage(serverMessage)
       setStatus('error')
     } finally {
