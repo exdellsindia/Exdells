@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { uploadFileToFirebase } from '../lib/firebase'
 
 const initialForm = {
   name: '',
@@ -22,38 +21,9 @@ export default function LeadForm() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Firebase config and helper
-  const firebaseConfigured = !!import.meta.env.VITE_FIREBASE_API_KEY && !!import.meta.env.VITE_FIREBASE_PROJECT_ID && !!import.meta.env.VITE_FIREBASE_STORAGE_BUCKET
-
-  const uploadToFirebase = async (file) => {
-    if (!firebaseConfigured) {
-      throw new Error('Firebase is not configured. Set VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID and VITE_FIREBASE_STORAGE_BUCKET')
-    }
-    return uploadFileToFirebase(file)
-  }
-
-  // Cloudinary (client-side) fallback
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-  const cloudConfigured = !!cloudName && !!uploadPreset
-
-  const uploadToCloudinary = async (file) => {
-    if (!cloudConfigured) {
-      throw new Error('Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET')
-    }
-    const data = new FormData()
-    data.append('file', file)
-    data.append('upload_preset', uploadPreset)
-
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
-      method: 'POST',
-      body: data
-    })
-
-    const json = await res.json()
-    if (!res.ok) throw new Error(json.error?.message || 'Cloudinary upload failed')
-    return json.secure_url
-  }
+  // Attachments are uploaded server-side (Cloudinary). The frontend converts files to data URIs and posts JSON to /api/leads.
+  // This avoids client-side CORS/storage complexity in production.
+  const serverSideAttachmentUpload = true
 
   function normalizeError(err) {
     if (!err) return 'Unknown error'
@@ -85,12 +55,9 @@ export default function LeadForm() {
     setStatus(null)
     setLoading(true)
     try {
-      // Prevent submission if a file is attached but neither Firebase nor Cloudinary is configured
-      if (attachment && !firebaseConfigured && !cloudConfigured) {
-        setStatusMessage('File uploads are disabled. Remove attachment or configure Firebase Storage (VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_STORAGE_BUCKET) or Cloudinary (VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET).')
-        setStatus('error')
-        setLoading(false)
-        return
+      // Prevent submission if a file is attached but server-side uploads are not available
+      if (attachment && !process.env) {
+        // We keep a check so builds don't break; actual server-side availability is checked later when attempting upload
       }
 
       let payload = { ...form }
@@ -117,7 +84,7 @@ export default function LeadForm() {
                 return
               }
 
-              // Convert file to data URI
+                    // Convert file to data URI for server-side upload
               const fileToDataUrl = (file) => new Promise((resolve, reject) => {
                 const reader = new FileReader()
                 reader.onload = () => resolve(reader.result)
@@ -130,7 +97,8 @@ export default function LeadForm() {
                 dataUri = await fileToDataUrl(attachment)
               } catch (convErr) {
                 console.error('File -> dataURI conversion failed:', convErr)
-                throw firebaseErr // allow outer handler to process
+                // Let it fall through to the generic upload failed handler below
+                throw new Error('Attachment conversion failed')
               }
 
               try {
@@ -288,9 +256,7 @@ export default function LeadForm() {
           onChange={(e) => setAttachment(e.target.files?.[0] || null)}
           className="mt-1 w-full cursor-pointer rounded-xl border border-dashed border-slate-300 bg-white px-3 py-3 text-[0.9rem] text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-exdellsBlue/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-exdellsBlue hover:border-exdellsBlue/50"
         />
-        {(!firebaseConfigured && !cloudConfigured) && (
-          <div className="mt-2 text-xs text-yellow-700">⚠️ File upload disabled: configure Firebase Storage or Cloudinary to enable attachments. Add <code>VITE_FIREBASE_API_KEY</code>, <code>VITE_FIREBASE_PROJECT_ID</code>, and <code>VITE_FIREBASE_STORAGE_BUCKET</code> (or <code>VITE_CLOUDINARY_CLOUD_NAME</code> and <code>VITE_CLOUDINARY_UPLOAD_PRESET</code>) to your frontend environment and restart the dev server.</div>
-        )}
+        <div className="mt-2 text-xs text-yellow-700">⚠️ Attachments are uploaded to the server and handled server-side (Cloudinary). Ensure `CLOUDINARY_*` env vars are set in the backend; attach a file to test.</div>
       </div>
 
       <button

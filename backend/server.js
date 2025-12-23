@@ -80,6 +80,12 @@ const PORT = process.env.PORT || 4000;
 
 const startServer = async () => {
   try {
+    // In production we require DATABASE_URL to be set (Supabase/Postgres)
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL is required in production. Please set it to your Supabase / Postgres connection string.')
+      process.exit(1)
+    }
+
     await sequelize.authenticate();
     console.log("✔ Database Connected");
 
@@ -87,7 +93,7 @@ const startServer = async () => {
       await sequelize.sync({ alter: true });
       console.log("✔ DB Synced (dev mode)");
     } else {
-      console.log("✔ Production Mode - DB Sync Disabled");
+      console.log("✔ Production Mode - DB Sync Disabled (use migrations)");
     }
 
     app.listen(PORT, () => console.log(`🚀 Server running on PORT: ${PORT}`));

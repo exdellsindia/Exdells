@@ -68,8 +68,14 @@ Temporary serverless / instant email option (recommended to get emails quickly):
      - `EMAIL_TO=info@exdells.com`
      - `EMAIL_FROM="Exdells Website" <no-reply@exdells.com>`
   3. Optionally add `BACKEND_URL` to forward leads to the backend once deployed.
-- Alternatively, add Firebase Storage client-side upload by creating a Firebase project and adding the following environment variables to the frontend (see `frontend/.env.example`):
-  - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_APP_ID`
+- The recommended production setup uses **server-side Cloudinary uploads** (backend) and **Supabase (Postgres)** for leads storage. Configure the following environment variables:
+  - Backend: `DATABASE_URL` (Supabase Postgres connection), `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+  - Frontend: set `VITE_API_BASE_URL` if your API is on a different host or use the default `/api` proxy in dev. Attachments are posted as data URIs and uploaded server-side to Cloudinary.
+
+Database migrations (recommended for production):
+- Install CLI: `cd backend && npm install --save-dev sequelize-cli`
+- Create the DB/migrate: `npx sequelize-cli db:migrate` (uses `DATABASE_URL`)
+- Rebuild schema changes via migrations instead of `sequelize.sync()` in production.
   - Set Storage rules for your bucket appropriately (for quick testing you can allow client uploads to `leads/*`, but for production prefer authenticated or secure upload approaches).
 \
 ## Production deployment (suggested)
