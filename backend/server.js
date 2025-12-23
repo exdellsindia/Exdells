@@ -8,6 +8,7 @@ const { sequelize } = require('./src/models');
 const authRoutes = require('./src/routes/auth');
 const leadRoutes = require('./src/routes/leads');
 const projectRoutes = require('./src/routes/projects');
+const chatRoutes = require('./src/routes/chat');
 
 const app = express();
 app.use(helmet());
@@ -54,13 +55,22 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/chat', chatRoutes);
 
 // ---------- STATIC UPLOADS ----------
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ---------- ERROR HANDLER ----------
 app.use((err, req, res, next) => {
-  console.error("SERVER ERROR:", err.message);
+  // Log full stack for debugging
+  console.error("SERVER ERROR:", err.stack || err);
+
+  // Return detailed error in non-production for debugging convenience
+  if (process.env.NODE_ENV !== 'production') {
+    return res.status(500).json({ error: err.message, stack: err.stack });
+  }
+
+  // Production-safe response
   res.status(500).json({ error: 'Server Error' });
 });
 

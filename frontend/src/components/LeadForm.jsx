@@ -20,23 +20,52 @@ export default function LeadForm() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
+  const uploadToCloudinary = async (file) => {
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error('Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET')
+    }
+
+    const data = new FormData()
+    data.append('file', file)
+    data.append('upload_preset', uploadPreset)
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+      method: 'POST',
+      body: data
+    })
+
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error?.message || 'Cloudinary upload failed')
+    return json.secure_url
+  }
+
   const submit = async (e) => {
     e.preventDefault()
     setStatus(null)
     setLoading(true)
     try {
-      const formData = new FormData()
-      Object.entries(form).forEach(([key, value]) => formData.append(key, value))
+      // If there's a file, send multipart/form-data to backend and include file
       if (attachment) {
+        const formData = new FormData()
+        Object.entries(form).forEach(([key, value]) => formData.append(key, value))
         formData.append('attachment', attachment)
+
+        await axios.post('/api/leads', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      } else {
+        // No file: send JSON
+        await axios.post('/api/leads', { ...form })
       }
-      await axios.post('/api/leads', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+
       setStatus('success')
       setForm(initialForm)
       setAttachment(null)
     } catch (err) {
+      console.error('Submit error:', err)
       setStatus('error')
     } finally {
       setLoading(false)

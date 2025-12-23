@@ -3,7 +3,7 @@ import LeadForm from '../components/LeadForm'
 import CTASection from '../components/CTASection'
 
 const contactInfo = [
-  { label: 'Phone / WhatsApp', value: '+91 96943 26431', link: 'tel:+919694326431' },
+  { label: 'Phone / WhatsApp', value: '+91 89558 08315', link: 'tel:+918955808315' },
   { label: 'Email', value: 'info@exdells.com', link: 'mailto:info@exdells.com' },
   { label: 'Service Hours', value: '9:00 AM – 8:00 PM (Mon–Sun)' }
 ]

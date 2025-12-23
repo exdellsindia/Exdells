@@ -54,6 +54,10 @@ This starts Postgres, backend (4000), and frontend (8080 via nginx).
 - Replace placeholder images in frontend/public (solar-sample.jpg)
 - Set a strong JWT_SECRET in environment variables for production
 - Create admin user via POST /api/auth/register or seed your DB
+- Server-side file uploads use Cloudinary (set `CLOUDINARY_*` env vars in `backend/.env`)
+- Email notifications are sent when a new lead is created; configure SMTP in `backend/.env` using:
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
+  - `EMAIL_FROM` (sender) and `EMAIL_TO` (recipient)
 \
 ## Production deployment (suggested)
 

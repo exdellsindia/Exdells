@@ -79,7 +79,7 @@ export default function Subsidy() {
         title="Speak to Exdells subsidy desk before applying."
         description="We will verify your documents, register you on the portal, and share a live tracker until the disbursement hits your bank."
         primary={{ label: 'Talk to subsidy expert', to: '/contact' }}
-        secondary={{ label: 'WhatsApp subsidy desk', href: 'https://wa.me/919694326431' }}
+        secondary={{ label: 'WhatsApp subsidy desk', href: 'https://wa.me/8955808315' }}
       />
     </div>
   )
