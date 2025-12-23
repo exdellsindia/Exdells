@@ -58,6 +58,17 @@ This starts Postgres, backend (4000), and frontend (8080 via nginx).
 - Email notifications are sent when a new lead is created; configure SMTP in `backend/.env` using:
   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
   - `EMAIL_FROM` (sender) and `EMAIL_TO` (recipient)
+
+Temporary serverless / instant email option (recommended to get emails quickly):
+- We added a Vercel serverless function at `frontend/api/leads.js` that will accept POSTs to `/api/leads` and either forward to your backend (when `BACKEND_URL` is set) or send an email directly using `SENDGRID_API_KEY` or SMTP env vars set in Vercel.
+- To enable immediate email delivery on deploy:
+  1. Deploy `frontend` to Vercel.
+  2. In Vercel project settings, add environment variables:
+     - `SENDGRID_API_KEY` (preferred) or `SMTP_HOST` + `SMTP_USER` + `SMTP_PASS`
+     - `EMAIL_TO=info@exdells.com`
+     - `EMAIL_FROM="Exdells Website" <no-reply@exdells.com>`
+  3. Optionally add `BACKEND_URL` to forward leads to the backend once deployed.
+- Alternatively, add `VITE_CLOUDINARY_CLOUD_NAME` and `VITE_CLOUDINARY_UPLOAD_PRESET` to the frontend if you want client-side uploads (the form will upload files to Cloudinary and send the file URL to the serverless function).
 \
 ## Production deployment (suggested)
 

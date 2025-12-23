@@ -48,18 +48,24 @@ export default function LeadForm() {
     setStatus(null)
     setLoading(true)
     try {
-      // If there's a file, send multipart/form-data to backend and include file
-      if (attachment) {
-        const formData = new FormData()
-        Object.entries(form).forEach(([key, value]) => formData.append(key, value))
-        formData.append('attachment', attachment)
+      let payload = { ...form }
 
-        // Let the browser set the Content-Type (includes boundary). Do not set it manually.
-        await axios.post('/api/leads', formData)
-      } else {
-        // No file: send JSON
-        await axios.post('/api/leads', { ...form })
+      if (attachment) {
+        // Upload to Cloudinary client-side and send the returned URL in JSON
+        try {
+          const url = await uploadToCloudinary(attachment)
+          payload.attachment = url
+        } catch (uploadErr) {
+          console.error('Cloudinary upload failed:', uploadErr)
+          setStatusMessage('File upload failed. You can try again without an attachment or contact support.')
+          setStatus('error')
+          setLoading(false)
+          return
+        }
       }
+
+      await axios.post('/api/leads', payload)
+
 
       setStatus('success')
       setForm(initialForm)
