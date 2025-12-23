@@ -55,11 +55,6 @@ export default function LeadForm() {
     setStatus(null)
     setLoading(true)
     try {
-      // Prevent submission if a file is attached but server-side uploads are not available
-      if (attachment && !process.env) {
-        // We keep a check so builds don't break; actual server-side availability is checked later when attempting upload
-      }
-
       let payload = { ...form }
 
       if (attachment) {

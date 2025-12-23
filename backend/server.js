@@ -9,6 +9,7 @@ const authRoutes = require('./src/routes/auth');
 const leadRoutes = require('./src/routes/leads');
 const projectRoutes = require('./src/routes/projects');
 const chatRoutes = require('./src/routes/chat');
+const uploadsRoutes = require('./src/routes/uploads');
 
 const app = express();
 app.use(helmet());
@@ -57,6 +58,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/uploads', uploadsRoutes);
 
 // ---------- STATIC UPLOADS ----------
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
