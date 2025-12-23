@@ -77,13 +77,26 @@ router.post('/', upload.single('attachment'), async (req, res) => {
   }
 })
 
-router.get('/', async (req, res) => {
-  const leads = await Lead.findAll({ order: [['createdAt', 'DESC']] })
-  res.json(leads)
+// Simple test endpoint to create a lead quickly (no file required). Useful for verifying DB and email flows.
+router.post('/test', async (req, res) => {
+  try {
+    const { name = 'Test Lead', phone = '', email = '', city = '', notes = '', capacity = '' } = req.body
+
+    const lead = await Lead.create({ name, phone, email, city, notes, capacity, attachment: null })
+
+    // Try to send notification (non-blocking)
+    try {
+      sendLeadNotification(lead)
+    } catch (emailErr) {
+      console.error('Email send failed (non-blocking):', emailErr)
+    }
+
+    res.status(201).json({ success: true, lead })
+  } catch (err) {
+    console.error('Test lead creation failed:', err)
+    res.status(500).json({ error: 'Test lead creation failed', message: err.message })
+  }
 })
-
-module.exports = router
-
 
 router.get('/', async (req, res) => {
   const leads = await Lead.findAll({ order: [['createdAt', 'DESC']] })
