@@ -9,7 +9,7 @@ const contactInfo = [
 ]
 
 const offices = [
-  { title: 'Head Office', detail: 'C-98, Royal City, Kalwar Road, Jaipur, Rajasthan 302012' },
+  { title: 'Registered', detail: 'C-98, Royal City, Kalwar Road, Jaipur, Rajasthan 302012' },
   { title: 'Branch Office', detail: '2nd Floor, A2, Garima Tower, Niwaru Road, Jaipur, Rajasthan 302012' }
 ]
 

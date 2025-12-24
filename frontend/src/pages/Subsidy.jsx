@@ -11,25 +11,62 @@ const steps = [
 
 const documents = ['Latest DISCOM bill', 'Property proof or tax receipt', 'Aadhaar and PAN', 'Cancelled cheque or bank passbook']
 
+
 export default function Subsidy() {
   return (
     <div className="bg-white/80">
-      <section className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-exdellsBlue/70">PM Surya Ghar</p>
-          <h1 className="text-4xl font-semibold text-exdellsNavy">₹78,000 subsidy simplified with Exdells.</h1>
-          <p className="text-lg text-slate-600">
-            Our subsidy desk handles registrations, inspections, disbursements, and EMI coordination so your family focuses on the benefits—not the paperwork.
-          </p>
-          <Link
-            to="/contact"
-            className="inline-flex rounded-full bg-gradient-to-r from-exdellsOrange to-exdellsGold px-6 py-3 text-sm font-semibold text-exdellsNavy shadow-brand-glow"
-          >
-            Book subsidy consultation
-          </Link>
+      {/* Top Hero Section - Two Columns */}
+      <section className="container mx-auto px-2 sm:px-4 py-8 sm:py-14 md:py-20">
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* Left: Main Info Block */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-md flex flex-col justify-between h-full">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-exdellsBlue/70 mb-2">PM SURYA GHAR YOJANA</p>
+              <h1 className="text-3xl sm:text-4xl font-semibold text-exdellsNavy mb-3">₹78,000 subsidy made simple.</h1>
+              <p className="text-base sm:text-lg text-slate-600 mb-5">
+                From DISCOM registration to final subsidy disbursement, Exdells keeps the paperwork, follow-ups, and site compliance on track so you receive benefits quickly.
+              </p>
+              <ul className="mb-6 space-y-2 text-slate-700 text-sm">
+                <li>• Dedicated subsidy coordinators in Jaipur and Bikaner</li>
+                <li>• Daily tracking dashboard shared with your family</li>
+                <li>• Optional EMI starting ₹2,499/month with partner NBFCs</li>
+              </ul>
+            </div>
+            <Link
+              to="/contact"
+              className="mt-2 inline-flex rounded-full bg-gradient-to-r from-exdellsSky to-exdellsBlue px-6 py-3 text-sm font-semibold text-white shadow-brand-glow hover:from-exdellsBlue hover:to-exdellsSky transition"
+            >
+              Learn how subsidy works
+            </Link>
+          </div>
+          {/* Right: Highlighted Stats Block */}
+          <div className="rounded-2xl border border-yellow-200 bg-gradient-to-br from-yellow-50 via-white to-yellow-100 p-8 flex flex-col justify-between h-full shadow-md">
+            <div>
+              <h2 className="text-lg font-semibold text-exdellsCharcoal mb-2">Clean energy, zero stress.</h2>
+              <p className="text-slate-700 mb-3 text-sm">
+                You get a dedicated WhatsApp group with the project manager, site engineer, and subsidy coordinator.
+              </p>
+              <p className="text-slate-700 mb-3 text-sm">
+                <strong>Instant support:</strong> Our team is available 7 days a week to answer your queries and guide you through every step of the process.
+              </p>
+              <p className="text-slate-700 mb-6 text-sm">
+                <strong>Peace of mind:</strong> We handle all paperwork, site visits, and government approvals so you can focus on enjoying your savings and clean energy.
+              </p>
+            </div>
+            <div className="flex gap-8 mt-auto">
+              <div>
+                <span className="block text-3xl font-bold text-exdellsCharcoal leading-tight">48 hrs</span>
+                <span className="block text-xs text-slate-600 mt-1">Average installation time after material reaches site</span>
+              </div>
+              <div>
+                <span className="block text-3xl font-bold text-exdellsCharcoal leading-tight">25 yrs</span>
+                <span className="block text-xs text-slate-600 mt-1">Panel performance warranty with service support</span>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        {/* Steps Section (unchanged) */}
+        <div className="mt-16 grid gap-6 md:grid-cols-2">
           {steps.map((step, index) => (
             <div key={step.title} className="rounded-3xl border border-exdellsBlue/15 bg-white p-6 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-exdellsBlue/80">Step {index + 1}</p>
