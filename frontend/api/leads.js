@@ -8,7 +8,7 @@
 const BACKEND_URL = process.env.BACKEND_URL || process.env.VITE_API_BASE_URL || 'https://exdells-1.onrender.com'
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST') { 
     res.setHeader('Allow', 'POST')
     return res.status(405).json({ error: 'Method Not Allowed' })
   }

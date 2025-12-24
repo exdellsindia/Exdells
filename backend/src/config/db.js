@@ -4,12 +4,19 @@ const path = require('path');
 
 let sequelize;
 
+
+if (!process.env.DATABASE_URL) {
+  console.error('DATABASE_URL is NOT SET!');
+} else {
+  console.log('DATABASE_URL starts with:', process.env.DATABASE_URL.slice(0, 30) + '...');
+}
+
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     protocol: 'postgres',
     logging: false,
-    dialectOptions: process.env.DB_SSL === 'true' ? { ssl: { require: true, rejectUnauthorized: false } } : undefined
+    dialectOptions: { ssl: { require: true, rejectUnauthorized: false } }
   });
   console.log('Using Postgres DB via DATABASE_URL');
 } else {
