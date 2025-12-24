@@ -7,7 +7,8 @@ const initialForm = {
   email: '',
   city: '',
   capacity: '',
-  notes: ''
+  notes: '',
+  bill: ''
 }
 
 export default function LeadForm() {
@@ -65,56 +66,85 @@ export default function LeadForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={submit}>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <form
+      className="max-w-2xl mx-auto bg-white/90 shadow-2xl rounded-3xl px-8 py-10 space-y-6 border border-exdellsBlue/10 backdrop-blur"
+      onSubmit={submit}
+    >
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-          <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">Full Name</label>
+          <label className="block text-xs font-bold uppercase tracking-[0.25em] text-exdellsBlue mb-1">Full Name</label>
           <input
             value={form.name}
             onChange={(e) => updateField('name', e.target.value)}
             placeholder="Rakesh Sharma"
-            className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[0.95rem] text-black outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20"
+            className="mt-1 w-full rounded-xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
             required
           />
         </div>
         <div>
-          <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">Phone</label>
+          <label className="block text-xs font-bold uppercase tracking-[0.25em] text-exdellsBlue mb-1">Phone</label>
           <input
             value={form.phone}
             onChange={(e) => updateField('phone', e.target.value)}
             placeholder="+91 9X XXX XXXX"
-            className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[0.95rem] text-black outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20"
+            className="mt-1 w-full rounded-xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
             required
           />
         </div>
         <div>
-          <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">Email</label>
+          <label className="block text-xs font-bold uppercase tracking-[0.25em] text-exdellsBlue mb-1">Email</label>
           <input
             type="email"
             value={form.email}
             onChange={(e) => updateField('email', e.target.value)}
             placeholder="you@email.com"
-            className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[0.95rem] text-black outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20"
+            className="mt-1 w-full rounded-xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
           />
         </div>
         <div>
-          <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">City</label>
+          <label className="block text-xs font-bold uppercase tracking-[0.25em] text-exdellsBlue mb-1">City</label>
           <input
             value={form.city}
             onChange={(e) => updateField('city', e.target.value)}
             placeholder="Jaipur"
-            className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[0.95rem] text-black outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20"
+            className="mt-1 w-full rounded-xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
             required
           />
         </div>
       </div>
 
+      {/* Monthly Electricity Bill */}
       <div>
-        <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">Approx. Capacity Needed</label>
+        <label className="block text-sm font-bold text-exdellsNavy mb-2">Monthly Electricity Bill</label>
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
+          {[
+            'Less than ₹1500',
+            '₹1500 - ₹2500',
+            '₹2500 - ₹4000',
+            '₹4000 - ₹8000',
+            'More than ₹8000',
+          ].map((option) => (
+            <label key={option} className="inline-flex items-center text-base font-medium text-exdellsNavy bg-exdellsBlue/5 px-3 py-1.5 rounded-full cursor-pointer hover:bg-exdellsBlue/10 transition">
+              <input
+                type="radio"
+                name="bill"
+                value={option}
+                checked={form.bill === option}
+                onChange={() => updateField('bill', option)}
+                className="mr-2 accent-exdellsBlue"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-[0.25em] text-exdellsBlue mb-1">Approx. Capacity Needed</label>
         <select
           value={form.capacity}
           onChange={(e) => updateField('capacity', e.target.value)}
-          className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[0.95rem] text-black outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20"
+          className="mt-1 w-full rounded-xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
         >
           <option value="">Select range</option>
           <option value="1-3 kW">1-3 kW • Small homes</option>
@@ -125,20 +155,18 @@ export default function LeadForm() {
       </div>
 
       <div>
-        <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">Tell us more</label>
+        <label className="block text-xs font-bold uppercase tracking-[0.25em] text-exdellsBlue mb-1">Tell us more</label>
         <textarea
           value={form.notes}
           onChange={(e) => updateField('notes', e.target.value)}
           placeholder="Roof type, power backup needs, preferred timeline..."
-          className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-[0.95rem] text-black outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20"
+          className="mt-1 w-full rounded-2xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
           rows={3}
         />
       </div>
 
-
-
       <button
-        className="inline-flex w-full justify-center rounded-full bg-gradient-to-r from-exdellsOrange to-exdellsGold px-6 py-3 text-sm font-semibold text-exdellsNavy transition hover:shadow-brand-glow disabled:opacity-60"
+        className="inline-flex w-full justify-center rounded-full bg-gradient-to-r from-exdellsBlue to-exdellsGold px-8 py-3 text-base font-bold text-white shadow-lg transition hover:shadow-brand-glow hover:from-exdellsNavy hover:to-exdellsOrange disabled:opacity-60"
         disabled={loading}
       >
         {loading ? 'Submitting...' : 'Book a Free Site Visit'}
