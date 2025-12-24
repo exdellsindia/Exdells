@@ -77,7 +77,7 @@ export default function Contact() {
         title="Visit our Jaipur experience center."
         description="Book a slot to see hardware options, compare inverters, and finalize subsidy paperwork alongside our engineering team."
         primary={{ label: 'Book in-person meet', to: '/contact' }}
-        secondary={{ label: 'Get directions', href: 'https://maps.google.com/?q=C-98,+Royal+City,+Kalwar+Road,+Jaipur' }}
+        secondary={{ label: 'Get directions', href: 'https://maps.google.com/?q=2nd+Floor,+A2,+Garima+Tower,+Niwaru+Road,+Jaipur,+Rajasthan+302012' }}
       />
     </div>
   )
