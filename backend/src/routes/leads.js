@@ -1,32 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const multer = require('multer')
-const cloudinary = require('cloudinary').v2
 const { Lead } = require('../models')
 const { sendLeadNotification } = require('../lib/email')
 
-// Configure Cloudinary from env
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-})
-
-// Use memory storage so we can upload the buffer to Cloudinary
-const upload = multer({ storage: multer.memoryStorage() })
-
-// Helper to upload buffer to Cloudinary (returns secure_url)
-const uploadBufferToCloudinary = async (fileBuffer, mimetype) => {
-  // Convert to data URI
-  const dataUri = `data:${mimetype};base64,${fileBuffer.toString('base64')}`
-  const result = await cloudinary.uploader.upload(dataUri, { folder: 'leads' })
-  return result.secure_url
-}
-
-// Accept multipart/form-data (with optional file) or JSON body
-router.post('/', upload.single('attachment'), async (req, res) => {
-  // Debug: log incoming request body and file presence
-  console.log('Incoming /api/leads request', { body: req.body, hasFile: !!req.file })
+// Accept JSON body only (no file uploads)
+router.post('/', async (req, res) => {
+  console.log('Incoming /api/leads request', { body: req.body })
 
   try {
     const { name, phone, email, city, notes, capacity } = req.body
@@ -35,33 +14,6 @@ router.post('/', upload.single('attachment'), async (req, res) => {
       return res.status(400).json({ error: 'Validation: name is required and should be at least 3 characters' })
     }
 
-    let attachmentUrl = null
-
-    // If client sent a file (multipart/form-data), upload it to Cloudinary
-    if (req.file) {
-      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-        return res.status(500).json({ error: 'Server misconfiguration: CLOUDINARY_* env vars are required for file uploads' })
-      }
-
-      attachmentUrl = await uploadBufferToCloudinary(req.file.buffer, req.file.mimetype)
-    } else if (req.body.attachment) {
-      // If client sent a string URL for attachment, accept it
-      const att = req.body.attachment
-
-      // If the client sent a data URI (e.g., 'data:image/png;base64,...'), upload it to Cloudinary
-      if (typeof att === 'string' && att.startsWith('data:')) {
-        try {
-          console.log('Uploading data URI attachment to Cloudinary (server-side)')
-          const result = await cloudinary.uploader.upload(att, { folder: 'leads' })
-          attachmentUrl = result.secure_url
-        } catch (uploadErr) {
-          console.error('Server-side Cloudinary upload of data URI failed:', uploadErr)
-          return res.status(500).json({ error: 'Server upload failed', message: uploadErr.message })
-        }
-      } else {
-        attachmentUrl = att
-      }
-    }
 
     const lead = await Lead.create({
       name,
@@ -69,8 +21,7 @@ router.post('/', upload.single('attachment'), async (req, res) => {
       email,
       city,
       notes,
-      capacity,
-      attachment: attachmentUrl || null
+      capacity
     })
 
     // Fire-and-forget: send notification email (do not block response)

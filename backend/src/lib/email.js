@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer')
 
-// Builds a transporter. If SMTP env vars are missing and we're in development,
-// create an Ethereal test account and return a transporter for testing.
+// Builds a transporter. Only supports SMTP (production-ready)
 async function buildTransporter() {
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
     const port = Number(process.env.SMTP_PORT) || 587
@@ -16,22 +15,7 @@ async function buildTransporter() {
       }
     })
   }
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn('SMTP not configured. Creating Ethereal test account for dev email testing...')
-    const testAccount = await nodemailer.createTestAccount()
-    return nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    })
-  }
-
-  console.warn('SMTP not configured and is production. Email sending disabled.')
+  console.warn('SMTP not configured. Email sending disabled.')
   return null
 }
 
@@ -67,11 +51,7 @@ async function sendLeadNotification(lead) {
     const info = await transporter.sendMail(mailOptions)
     console.log('Lead notification email sent:', info.messageId)
 
-    // If using Ethereal, also log the preview URL so developer can view the message
-    const testPreview = nodemailer.getTestMessageUrl(info)
-    if (testPreview) {
-      console.log('Ethereal preview URL:', testPreview)
-    }
+    // No Ethereal/test preview in production
   } catch (err) {
     console.error('Failed to send lead notification email:', err)
     // don't throw — email failure should not block lead creation
