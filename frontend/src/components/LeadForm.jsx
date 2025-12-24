@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import axios from 'axios'
+import { api } from '../lib/api'
 
 const initialForm = {
   name: '',
@@ -51,7 +51,10 @@ export default function LeadForm() {
     setStatus(null)
     setLoading(true)
     try {
-      await axios.post('/api/leads', { ...form }, { headers: { 'Content-Type': 'application/json' } })
+      await api.post('/api/leads', { ...form }, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 7000
+      })
       setStatus('success')
       setForm(initialForm)
     } catch (err) {
