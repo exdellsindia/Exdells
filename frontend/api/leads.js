@@ -20,7 +20,7 @@ const nodemailer = (() => {
   }
 })()
 
-const BACKEND_URL = process.env.BACKEND_URL
+const BACKEND_URL = process.env.BACKEND_URL || process.env.VITE_API_BASE_URL || 'https://exdells-1.onrender.com'
 const EMAIL_TO = process.env.EMAIL_TO || 'info@exdells.com'
 const EMAIL_FROM = process.env.EMAIL_FROM || 'no-reply@exdells.com'
 
