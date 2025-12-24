@@ -99,7 +99,7 @@ export default function Services() {
         title="Talk to the Exdells project desk about your rooftop or facility."
         description="Share CAD drawings, load lists, or energy bills—we will craft a service stack across EPC, electrical upgrades, and AMC."
         primary={{ label: 'Plan my project', to: '/contact' }}
-        secondary={{ label: 'Call project desk', href: 'tel:+919694326431' }}
+        secondary={{ label: 'Call project desk', href: 'tel:+918955808315' }}
       />
     </div>
   )

@@ -239,7 +239,7 @@ export default function Home() {
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.4em] text-white/60">Connect instantly</p>
                 <div className="mt-3 text-xl font-semibold">
-                  <a href="tel:+919694326431" className="text-exdellsYellow">+91 96943 26431</a>
+                  <a href="tel:+919694326431" className="text-exdellsYellow">+91 89558 08315</a>
                 </div>
                 <p className="text-sm text-white/70">Call or WhatsApp (9:00 AM – 8:00 PM)</p>
               </div>
@@ -253,7 +253,7 @@ export default function Home() {
                 <div>
                   <p className="text-xs uppercase tracking-[0.35em] text-white/50">Visit</p>
                   <p className="mt-1 text-sm text-white/80">
-                    C-98, Royal City, Kalwar Road, Jaipur <br /> A2, Garima Tower, Niwaru Road
+                    2nd Floor, A2, Garima Tower, Niwaru Road <br /> Jaipur, Rajasthan 302012
                   </p>
                 </div>
               </div>

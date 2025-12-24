@@ -6,7 +6,7 @@ export default function CTASection({
   title = 'Book a free site visit with Exdells engineers.',
   description = 'Share your rooftop photo or electricity bill and we will revert with savings, subsidy roadmap, and EMI options within 30 minutes.',
   primary = { label: 'Book Consultation', to: '/contact' },
-  secondary = { label: 'Call +91 96943 26431', href: 'tel:+919694326431' }
+  secondary = { label: 'Call +91 89558 08315', href: 'tel:+918955808315' }
 }) {
   return (
     <section className="py-16">

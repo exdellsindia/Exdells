@@ -91,8 +91,8 @@ export default function Footer() {
           <div className="mt-4 text-sm space-y-2 text-white/80">
             <p>
               Phone:{' '}
-              <a href="tel:+919694326431" className="text-exdellsGold font-semibold">
-                +91 96943 26431
+              <a href="tel:+918955808315" className="text-exdellsGold font-semibold">
+                +91 89558 08315
               </a>
             </p>
             <p>
