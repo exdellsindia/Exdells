@@ -12,7 +12,6 @@ const initialForm = {
 
 export default function LeadForm() {
   const [form, setForm] = useState(initialForm)
-  const [attachment, setAttachment] = useState(null)
   const [status, setStatus] = useState(null)
   const [statusMessage, setStatusMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,10 +19,6 @@ export default function LeadForm() {
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
-
-  // Attachments are uploaded server-side (Cloudinary). The frontend converts files to data URIs and posts JSON to /api/leads.
-  // This avoids client-side CORS/storage complexity in production.
-  const serverSideAttachmentUpload = true
 
   function normalizeError(err) {
     if (!err) return 'Unknown error'
@@ -55,113 +50,12 @@ export default function LeadForm() {
     setStatus(null)
     setLoading(true)
     try {
-      let payload = { ...form }
-
-      if (attachment) {
-        // Prefer Firebase client-side upload; fall back to Cloudinary, then to server multipart upload if CORS or other client upload fails
-        try {
-          let url
-          if (firebaseConfigured) {
-            try {
-              url = await uploadToFirebase(attachment)
-            } catch (firebaseErr) {
-              // Likely CORS or rules issue — attempt server-side JSON data-URI upload first, then multipart if needed
-              console.warn('Firebase upload failed, attempting server-side data-URI fallback:', firebaseErr)
-
-              // Quick check: ensure backend is reachable before converting a potentially-large file
-              try {
-                await axios.get('/health', { timeout: 2000 })
-              } catch (pingErr) {
-                console.warn('Backend health check failed, skipping server fallback:', pingErr)
-                setStatusMessage('Backend is not reachable. Try submitting without an attachment, or start the backend (cd backend && npm run dev).')
-                setStatus('error')
-                setLoading(false)
-                return
-              }
-
-                    // Convert file to data URI for server-side upload
-              const fileToDataUrl = (file) => new Promise((resolve, reject) => {
-                const reader = new FileReader()
-                reader.onload = () => resolve(reader.result)
-                reader.onerror = (e) => reject(e)
-                reader.readAsDataURL(file)
-              })
-
-              let dataUri
-              try {
-                dataUri = await fileToDataUrl(attachment)
-              } catch (convErr) {
-                console.error('File -> dataURI conversion failed:', convErr)
-                // Let it fall through to the generic upload failed handler below
-                throw new Error('Attachment conversion failed')
-              }
-
-              try {
-                // POST JSON with data URI attachment; backend will upload it to Cloudinary server-side
-                await axios.post('/api/leads', { ...payload, attachment: dataUri })
-
-                setStatus('success')
-                setForm(initialForm)
-                setAttachment(null)
-                setStatusMessage('Submitted (uploaded via server fallback).')
-                return
-              } catch (backendErr) {
-                console.warn('Server-side data-URI fallback failed, will attempt multipart:', backendErr)
-                // If server-side JSON fails, try multipart as a last resort
-                try {
-                  const fd = new FormData()
-                  Object.entries(payload).forEach(([k, v]) => fd.append(k, v || ''))
-                  fd.append('attachment', attachment)
-
-                  // Let Axios set the Content-Type and boundary automatically
-                  await axios.post('/api/leads', fd)
-
-                  setStatus('success')
-                  setForm(initialForm)
-                  setAttachment(null)
-                  setStatusMessage('Submitted (uploaded via server fallback).')
-                  return
-                } catch (multipartErr) {
-                  console.error('Backend multipart fallback failed:', multipartErr)
-
-                  // Distinguish network / unreachable server vs server error
-                  if (multipartErr?.request && !multipartErr?.response) {
-                    setStatusMessage('Server unreachable: your backend is not running or not reachable at /api. Start the backend (cd backend && npm run dev) or deploy the API. You can still submit without an attachment.')
-                  } else {
-                    setStatusMessage(normalizeError(multipartErr).slice(0, 500))
-                  }
-
-                  setStatus('error')
-                  setLoading(false)
-                  return
-                }
-              }
-            }
-          } else {
-            url = await uploadToCloudinary(attachment)
-          }
-
-          // If we get a URL from client upload, attach it to the JSON payload
-          if (url) payload.attachment = url
-        } catch (uploadErr) {
-          console.error('File upload failed:', uploadErr)
-          setStatusMessage('File upload failed. You can try again without an attachment or contact support.')
-          setStatus('error')
-          setLoading(false)
-          return
-        }
-      }
-
-      await axios.post('/api/leads', payload, { headers: { 'Content-Type': 'application/json' } })
-
-
+      await axios.post('/api/leads', { ...form }, { headers: { 'Content-Type': 'application/json' } })
       setStatus('success')
       setForm(initialForm)
-      setAttachment(null)
     } catch (err) {
       console.error('Submit error:', err)
       console.error('Server response data:', err?.response?.data)
-
       const serverMessage = normalizeError(err).slice(0, 500)
       setStatusMessage(serverMessage)
       setStatus('error')
@@ -241,18 +135,7 @@ export default function LeadForm() {
         />
       </div>
 
-      <div>
-        <label className="text-[0.72rem] font-semibold uppercase tracking-[0.35em] text-slate-500">
-          Attach bill / rooftop photo (optional)
-        </label>
-        <input
-          type="file"
-          accept=".pdf,.jpg,.jpeg,.png"
-          onChange={(e) => setAttachment(e.target.files?.[0] || null)}
-          className="mt-1 w-full cursor-pointer rounded-xl border border-dashed border-slate-300 bg-white px-3 py-3 text-[0.9rem] text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-exdellsBlue/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-exdellsBlue hover:border-exdellsBlue/50"
-        />
-        <div className="mt-2 text-xs text-yellow-700">⚠️ Attachments are uploaded to the server and handled server-side (Cloudinary). Ensure `CLOUDINARY_*` env vars are set in the backend; attach a file to test.</div>
-      </div>
+
 
       <button
         className="inline-flex w-full justify-center rounded-full bg-gradient-to-r from-exdellsOrange to-exdellsGold px-6 py-3 text-sm font-semibold text-exdellsNavy transition hover:shadow-brand-glow disabled:opacity-60"
