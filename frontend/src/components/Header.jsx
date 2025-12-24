@@ -6,7 +6,8 @@ const navItems = [
   { path: '/services', label: 'Services' },
   { path: '/projects', label: 'Projects' },
   { path: '/subsidy', label: 'Subsidy' },
-  { path: '/blog', label: 'Blog' }
+  { path: '/blog', label: 'Blog' },
+  { path: '/contact', label: 'Contact' }
 ]
 
 const LogoMark = ({ className = '' }) => (
