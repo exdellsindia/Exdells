@@ -1,3 +1,7 @@
+// Start weekly WhatsFlows alerts job
+const { startWeeklyAlertsJob } = require('./src/jobs/weeklyAlerts');
+  // Start the weekly WhatsFlows alerts cron job
+  startWeeklyAlertsJob();
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
