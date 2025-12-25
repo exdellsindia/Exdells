@@ -180,7 +180,7 @@ export default function LeadForm() {
           className="accent-exdellsBlue w-5 h-5 rounded focus:ring-exdellsBlue border border-exdellsBlue/30"
         />
         <label htmlFor="optInAlerts" className="text-base text-exdellsNavy select-none cursor-pointer">
-          Opt in for weekly alerts via SMS, WhatsApp and Email to stay updated on our platform.
+          Yes, I’d like to receive important updates and offers from Exdells via WhatsApp, SMS, or Email.
         </label>
       </div>
 
