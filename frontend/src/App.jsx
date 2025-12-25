@@ -18,8 +18,6 @@ import TermsAndConditions from './pages/TermsAndConditions'
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-800">
-        // Main App component for Exdells Website
-        // Handles routing, layout, and global UI structure.
       <ScrollToTop />
       <Header />
       <main className="flex-1">
