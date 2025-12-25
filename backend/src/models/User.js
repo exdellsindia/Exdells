@@ -24,10 +24,6 @@ module.exports = (sequelize) => {
 
     // Return model for use in app
     return User;
-  };
-  // Sequelize model for User (authentication)
-
-  return User;
 };
 
 
