@@ -192,8 +192,11 @@ export default function LeadForm() {
       </button>
 
       {status === 'success' && (
-        <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          Thank you! Our Jaipur team will call you within 30 minutes.
+        <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-5 text-center text-base text-green-900 shadow-lg animate-fade-in">
+          <svg className="mx-auto mb-2" width="40" height="40" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#22c55e" opacity="0.15"/><path d="M7 13l3 3 7-7" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <div className="font-bold text-lg mb-1">Thank you for your interest!</div>
+          <div className="mb-1">We've received your details and our solar experts will contact you soon to help you go solar.</div>
+          <div className="text-sm text-green-700">We appreciate your trust in Exdells India Pvt. Ltd. — powering a brighter, greener future.</div>
         </div>
       )}
       {status === 'error' && (
