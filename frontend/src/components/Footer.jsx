@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+// Footer component for Exdells Website
+// Displays contact info, quick links, and brand logo
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
+// Quick links for navigation
 const quickLinks = [
   { label: 'Residential Solar', to: '/services' },
   { label: 'Commercial EPC', to: '/projects' },
@@ -8,8 +11,9 @@ const quickLinks = [
   { label: 'Blog', to: '/blog' },
   { label: 'Privacy Policy', to: '/privacy-policy' },
   { label: 'Terms & Conditions', to: '/terms-and-conditions' }
-]
+];
 
+// Office locations
 const offices = [
   {
     title: 'Head Office',
@@ -19,8 +23,9 @@ const offices = [
     title: 'Branch Office',
     detail: '2nd Floor, A2, Garima Tower, Niwaru Road, Jaipur, Rajasthan 302012'
   }
-]
+];
 
+// Mini logo SVG for footer
 const MiniLogo = ({ className = '' }) => (
   <svg viewBox="0 0 320 240" className={className} aria-hidden="true">
     <defs>

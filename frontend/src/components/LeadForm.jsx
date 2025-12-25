@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
-import { api } from '../lib/api'
+// Lead form component for Exdells Website
+// Handles user input, validation, and submission to backend
+import React, { useState } from 'react';
+import { api } from '../lib/api';
 
+// Initial form state
 const initialForm = {
   name: '',
   phone: '',
@@ -10,54 +13,57 @@ const initialForm = {
   notes: '',
   bill: '',
   optInAlerts: false
-}
+};
 
 export default function LeadForm() {
-  const [form, setForm] = useState(initialForm)
-  const [status, setStatus] = useState(null)
-  const [statusMessage, setStatusMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [form, setForm] = useState(initialForm);
+  const [status, setStatus] = useState(null);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  // Update form field value
   const updateField = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }))
-  }
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
+  // Normalize error messages from API responses
   function normalizeError(err) {
-    if (!err) return 'Unknown error'
-    const status = err?.response?.status
-    const data = err?.response?.data
+    if (!err) return 'Unknown error';
+    const status = err?.response?.status;
+    const data = err?.response?.data;
 
     if (data) {
-      if (typeof data === 'string') return status ? `(${status}) ${data}` : data
+      if (typeof data === 'string') return status ? `(${status}) ${data}` : data;
       if (typeof data === 'object') {
-        if (data.message) return status ? `(${status}) ${data.message}` : data.message
+        if (data.message) return status ? `(${status}) ${data.message}` : data.message;
         if (data.error) {
-          if (typeof data.error === 'string') return status ? `(${status}) ${data.error}` : data.error
-          if (data.error?.message) return status ? `(${status}) ${data.error.message}` : data.error.message
+          if (typeof data.error === 'string') return status ? `(${status}) ${data.error}` : data.error;
+          if (data.error?.message) return status ? `(${status}) ${data.error.message}` : data.error.message;
         }
         try {
-          return status ? `(${status}) ${JSON.stringify(data)}` : JSON.stringify(data)
+          return status ? `(${status}) ${JSON.stringify(data)}` : JSON.stringify(data);
         } catch {
-          return status ? `(${status}) Response contained circular data` : 'Response contained circular data'
+          return status ? `(${status}) Response contained circular data` : 'Response contained circular data';
         }
       }
     }
 
-    const base = err?.message || 'An unknown error occurred'
-    return status ? `(${status}) ${base}` : base
+    const base = err?.message || 'An unknown error occurred';
+    return status ? `(${status}) ${base}` : base;
   }
 
+  // Handle form submission
   const submit = async (e) => {
-    e.preventDefault()
-    setStatus(null)
-    setLoading(true)
+    e.preventDefault();
+    setStatus(null);
+    setLoading(true);
     try {
       await api.post('/api/leads', { ...form }, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 7000
-      })
-      setStatus('success')
-      setForm(initialForm)
+      });
+      setStatus('success');
+      setForm(initialForm);
     } catch (err) {
       console.error('Submit error:', err)
       console.error('Server response data:', err?.response?.data)

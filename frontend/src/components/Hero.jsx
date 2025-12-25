@@ -1,18 +1,23 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+// Hero section for Exdells Website
+// Displays main headline, highlights, and call-to-action buttons
+import React from 'react';
+import { Link } from 'react-router-dom';
 
+// Key highlights for hero section
 const highlights = [
   { label: 'Projects Delivered', value: '150+' },
   { label: 'Govt. Approvals', value: '15' },
   { label: 'Customer Rating', value: '4.9/5' }
-]
+];
 
+// Hero image URL
 const heroImage =
-  'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=80&sat=-20'
+  'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=80&sat=-20';
 
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-exdellsMidnight via-exdellsNavy to-exdellsSlate py-24 text-white">
+      {/* Decorative background gradients */}
       <div className="absolute inset-0 opacity-50">
         <div className="absolute -left-20 top-10 h-80 w-80 rounded-full bg-exdellsOrange/30 blur-[120px]" />
         <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-exdellsSky/30 blur-[120px]" />
@@ -29,6 +34,7 @@ export default function Hero() {
             Exdells brings the Jaipur sun indoors with rooftop EPC, subsidy desks, EV-ready wiring, and AMC plans backed
             by licensed engineers.
           </p>
+          {/* Call-to-action buttons */}
           <div className="flex flex-col gap-4 sm:flex-row">
             <Link
               to="/contact"

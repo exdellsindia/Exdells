@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
 
+// Header component for Exdells Website
+// Displays navigation bar and logo
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+// Navigation items for main menu
 const navItems = [
   { path: '/about', label: 'About' },
   { path: '/services', label: 'Services' },
@@ -8,8 +12,9 @@ const navItems = [
   { path: '/subsidy', label: 'Subsidy' },
   { path: '/blog', label: 'Blog' },
   { path: '/contact', label: 'Contact' }
-]
+];
 
+// Logo SVG for brand mark
 const LogoMark = ({ className = '' }) => (
   <svg viewBox="0 0 320 240" className={className} aria-hidden="true">
     <defs>
@@ -36,7 +41,7 @@ const LogoMark = ({ className = '' }) => (
     <path d="M80 170V210M130 170V210M180 170V210M230 170V210" stroke="#5EB0FF" strokeWidth="6" />
     <circle cx="60" cy="60" r="20" fill="#FFB347" opacity="0.3" />
   </svg>
-)
+);
 
 const BRAND_LOGO_SRC = '/brand-logo.png'
 const LOGO_SIZE = 56
