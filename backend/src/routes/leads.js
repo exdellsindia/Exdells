@@ -38,10 +38,9 @@ router.post('/', async (req, res) => {
         sendLeadConfirmation(lead);
       }
       if (lead.phone && lead.optInAlerts) {
-        // WhatsFlows WhatsApp message to user
-        const { sendWhatsFlowsMessage } = require('../lib/whatsflows');
-        const userMsg = `Thank you, ${lead.name}, for contacting Exdells India Pvt. Ltd.! Our solar experts will reach out to you soon.\n- Exdells Team`;
-        sendWhatsFlowsMessage(lead.phone, userMsg);
+        // WhatsFlows WhatsApp/SMS message to user (solar-branded)
+        const { sendUserSolarThankYou } = require('../lib/whatsflows');
+        sendUserSolarThankYou(lead.phone, lead.name);
       }
 
       // WhatsFlows WhatsApp admin alert
