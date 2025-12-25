@@ -38,10 +38,17 @@ router.post('/', async (req, res) => {
         sendLeadConfirmation(lead);
       }
       if (lead.phone && lead.optInAlerts) {
-        // WhatsFlows WhatsApp message
+        // WhatsFlows WhatsApp message to user
         const { sendWhatsFlowsMessage } = require('../lib/whatsflows');
         const userMsg = `Thank you, ${lead.name}, for contacting Exdells India Pvt. Ltd.! Our solar experts will reach out to you soon.\n- Exdells Team`;
         sendWhatsFlowsMessage(lead.phone, userMsg);
+      }
+
+      // WhatsFlows WhatsApp admin alert
+      {
+        const { sendWhatsFlowsMessage } = require('../lib/whatsflows');
+        const adminMsg = `New Lead Received:\nName: ${lead.name}\nPhone: ${lead.phone}\nEmail: ${lead.email}\nCity: ${lead.city}\nCapacity: ${lead.capacity}\nBill: ${lead.bill || ''}\nOpted In: ${lead.optInAlerts ? 'Yes' : 'No'}`;
+        sendWhatsFlowsMessage('918955808315', adminMsg);
       }
     } catch (userAlertErr) {
       console.error('User confirmation alert failed (non-blocking):', userAlertErr)
