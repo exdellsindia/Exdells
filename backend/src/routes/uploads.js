@@ -23,9 +23,6 @@ router.post('/', upload.single('file'), (req, res) => {
 });
 
 // Export router for use in server.js
-module.exports = router;
-const express = require('express')
-const router = express.Router()
 const cloudinary = require('cloudinary').v2
 
 // Simple endpoint to verify Cloudinary credentials and the upload path
