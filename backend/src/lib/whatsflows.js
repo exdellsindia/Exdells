@@ -2,7 +2,7 @@
 // Send WhatsApp message using WhatsFlows API
 const axios = require('axios');
 
-const WF_API_URL = 'https://crmapi.whatsflows.com/api/v1/send-message';
+const WF_API_URL = 'https://crmapi.whatsflows.com/api/v1/message/send';
 const WF_API_KEY = process.env.WHATSFLOWS_API_KEY;
 
 if (!WF_API_KEY) {
@@ -17,7 +17,8 @@ async function sendWhatsFlowsMessage(phone, message) {
     const formattedPhone = phone.replace(/\D/g, '');
     const res = await axios.post(WF_API_URL, {
       phone: formattedPhone,
-      message
+      message,
+      channel: 'whatsapp'
     }, {
       headers: {
         'Content-Type': 'application/json',
