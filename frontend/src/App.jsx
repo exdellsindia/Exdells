@@ -11,6 +11,9 @@ import Subsidy from './pages/Subsidy'
 import Contact from './pages/Contact'
 import Blog from './pages/Blog'
 
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsAndConditions from './pages/TermsAndConditions'
+
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-800">
@@ -24,6 +27,8 @@ export default function App() {
           <Route path="/subsidy" element={<Subsidy />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         </Routes>
       </main>
       <Footer />

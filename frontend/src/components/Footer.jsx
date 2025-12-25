@@ -5,7 +5,9 @@ const quickLinks = [
   { label: 'Residential Solar', to: '/services' },
   { label: 'Commercial EPC', to: '/projects' },
   { label: 'PM Surya Ghar Subsidy', to: '/subsidy' },
-  { label: 'Blog', to: '/blog' }
+  { label: 'Blog', to: '/blog' },
+  { label: 'Privacy Policy', to: '/privacy-policy' },
+  { label: 'Terms & Conditions', to: '/terms-and-conditions' }
 ]
 
 const offices = [
