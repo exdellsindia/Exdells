@@ -49,6 +49,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'new'
+    },
+    optInAlerts: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   });
 

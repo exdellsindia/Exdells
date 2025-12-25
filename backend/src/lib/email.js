@@ -25,6 +25,7 @@ async function sendLeadNotification(lead) {
     <p><strong>City:</strong> ${lead.city || '—'}</p>
     <p><strong>Capacity:</strong> ${lead.capacity || '—'}</p>
     <p><strong>Notes:</strong><br/>${lead.notes ? lead.notes.replace(/\n/g, '<br/>') : '—'}</p>
+    <p><strong>Opted in for Alerts:</strong> ${lead.optInAlerts ? '<span style="color:green;font-weight:bold">Yes</span>' : 'No'}</p>
     ${lead.attachment ? `<p><strong>Attachment:</strong> <a href="${lead.attachment}" target="_blank">Open</a></p>` : ''}
     <p style="font-size:0.85rem;color:#666">This is an automated notification from Exdells Website.</p>
   `;

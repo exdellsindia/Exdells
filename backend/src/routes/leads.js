@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
   console.log('Incoming /api/leads request', { body: req.body })
 
   try {
-    const { name, phone, email, city, notes, capacity } = req.body
+    const { name, phone, email, city, notes, capacity, optInAlerts } = req.body
 
     if (!name || name.length < 3) {
       return res.status(400).json({ error: 'Validation: name is required and should be at least 3 characters' })
@@ -21,7 +21,8 @@ router.post('/', async (req, res) => {
       email,
       city,
       notes,
-      capacity
+      capacity,
+      optInAlerts: !!optInAlerts
     })
 
     // Fire-and-forget: send notification email (do not block response)

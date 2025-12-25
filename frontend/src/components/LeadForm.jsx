@@ -8,7 +8,8 @@ const initialForm = {
   city: '',
   capacity: '',
   notes: '',
-  bill: ''
+  bill: '',
+  optInAlerts: false
 }
 
 export default function LeadForm() {
@@ -166,6 +167,21 @@ export default function LeadForm() {
           className="mt-1 w-full rounded-2xl border border-exdellsBlue/20 bg-white px-4 py-3 text-base text-exdellsNavy outline-none focus:border-exdellsBlue focus:ring-2 focus:ring-exdellsBlue/20 transition"
           rows={3}
         />
+      </div>
+
+
+      {/* Opt-in for weekly alerts */}
+      <div className="flex items-center gap-3">
+        <input
+          id="optInAlerts"
+          type="checkbox"
+          checked={form.optInAlerts}
+          onChange={e => updateField('optInAlerts', e.target.checked)}
+          className="accent-exdellsBlue w-5 h-5 rounded focus:ring-exdellsBlue border border-exdellsBlue/30"
+        />
+        <label htmlFor="optInAlerts" className="text-base text-exdellsNavy select-none cursor-pointer">
+          Opt in for weekly alerts via SMS, WhatsApp and Email to stay updated on our platform.
+        </label>
       </div>
 
       <button
