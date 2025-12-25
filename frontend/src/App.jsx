@@ -36,7 +36,7 @@ export default function App() {
       {/* WhatsApp Chat Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <a
-          href="https://wa.me/919999999999?text=Hello%20Exdells%20Team%2C%20I%20have%20a%20query."
+          href="https://wa.me/918955808315?text=Hello%20Exdells%20Team%2C%20I%20have%20a%20query."
           target="_blank"
           rel="noopener noreferrer"
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2"
