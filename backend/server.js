@@ -21,6 +21,8 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://exdellsindia.vercel.app',
+  'https://www.exdells.com',
+  'https://exdells.com',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
