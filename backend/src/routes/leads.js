@@ -25,11 +25,25 @@ router.post('/', async (req, res) => {
       optInAlerts: !!optInAlerts
     })
 
-    // Fire-and-forget: send notification email (do not block response)
+
+    // Fire-and-forget: send notification email (admin) and confirmation email (user)
     try {
       sendLeadNotification(lead)
     } catch (emailErr) {
       console.error('Email send failed (non-blocking):', emailErr)
+    }
+    try {
+      if (lead.email) {
+        const { sendLeadConfirmation } = require('../lib/email');
+        sendLeadConfirmation(lead);
+      }
+      if (lead.phone && lead.optInAlerts) {
+        const { sendUserSMS, sendUserWhatsApp } = require('../lib/sms');
+        sendUserSMS(lead.phone, lead.name);
+        sendUserWhatsApp(lead.phone, lead.name);
+      }
+    } catch (userAlertErr) {
+      console.error('User confirmation alert failed (non-blocking):', userAlertErr)
     }
 
     res.status(201).json(lead)

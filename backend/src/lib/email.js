@@ -44,4 +44,51 @@ async function sendLeadNotification(lead) {
   }
 }
 
-module.exports = { sendLeadNotification };
+async function sendLeadConfirmation(lead) {
+  if (!lead.email || !(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) return;
+  const port = Number(process.env.SMTP_PORT) || 587;
+  const secure = port === 465;
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port,
+    secure,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+
+  const from = process.env.EMAIL_FROM || process.env.SMTP_USER;
+  const to = lead.email;
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:24px 16px;background:#f8fafc;border-radius:12px;">
+      <h2 style="color:#0F4C81;">Thank you for contacting Exdells India Pvt. Ltd.</h2>
+      <p>Dear ${lead.name},</p>
+      <p>We have received your inquiry and our solar experts will reach out to you soon to help you go solar.</p>
+      <ul style="color:#444;line-height:1.7;font-size:15px;">
+        <li><strong>Name:</strong> ${lead.name}</li>
+        <li><strong>Phone:</strong> ${lead.phone || '—'}</li>
+        <li><strong>City:</strong> ${lead.city || '—'}</li>
+        <li><strong>Capacity:</strong> ${lead.capacity || '—'}</li>
+      </ul>
+      <p style="margin-top:18px;">Thank you for choosing Exdells — powering a brighter, greener future!</p>
+      <div style="margin-top:24px;font-size:13px;color:#888;">This is an automated confirmation. For urgent queries, call us at +91 89558 08315.</div>
+    </div>
+  `;
+
+  const mailOptions = {
+    from,
+    to,
+    subject: 'Thank you for contacting Exdells India Pvt. Ltd.',
+    html
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (err) {
+    // Email failure should not block lead creation
+  }
+}
+
+module.exports = { sendLeadNotification, sendLeadConfirmation };
