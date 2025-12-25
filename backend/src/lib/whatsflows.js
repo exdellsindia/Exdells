@@ -2,7 +2,7 @@
 // Send WhatsApp message using WhatsFlows API
 const axios = require('axios');
 
-const WF_API_URL = 'https://crmapi.whatsflows.com/api/v1/message/send';
+const WF_API_URL = 'https://crmapi.whatsflows.com/api/send-message';
 const WF_API_KEY = 'ZXhkZWxsc2luZGlhMUBnbWFpbC5jb20';
 
 // Send WhatsApp and SMS via WhatsFlows after form submission
