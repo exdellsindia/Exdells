@@ -38,9 +38,10 @@ router.post('/', async (req, res) => {
         sendLeadConfirmation(lead);
       }
       if (lead.phone && lead.optInAlerts) {
-        const { sendUserSMS, sendUserWhatsApp } = require('../lib/sms');
-        sendUserSMS(lead.phone, lead.name);
-        sendUserWhatsApp(lead.phone, lead.name);
+        // WhatsFlows WhatsApp message
+        const { sendWhatsFlowsMessage } = require('../lib/whatsflows');
+        const userMsg = `Thank you, ${lead.name}, for contacting Exdells India Pvt. Ltd.! Our solar experts will reach out to you soon.\n- Exdells Team`;
+        sendWhatsFlowsMessage(lead.phone, userMsg);
       }
     } catch (userAlertErr) {
       console.error('User confirmation alert failed (non-blocking):', userAlertErr)
