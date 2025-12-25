@@ -33,9 +33,16 @@ router.post('/', async (req, res) => {
       console.error('Email send failed (non-blocking):', emailErr)
     }
     try {
+
       if (lead.email) {
         const { sendLeadConfirmation } = require('../lib/email');
         sendLeadConfirmation(lead);
+        const { sendWeeklyAlertOptInEmail, sendOneTimeAlertEmail } = require('../lib/alertEmail');
+        if (lead.optInAlerts) {
+          sendWeeklyAlertOptInEmail(lead);
+        } else {
+          sendOneTimeAlertEmail(lead);
+        }
       }
       if (lead.phone && lead.optInAlerts) {
         // WhatsFlows WhatsApp/SMS message to user (solar-branded)
