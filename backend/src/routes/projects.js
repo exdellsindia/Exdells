@@ -1,8 +1,3 @@
-const express = require('express')
-const router = express.Router()
-const { Project } = require('../models')
-
-// Project routes for Exdells Website
 const express = require('express');
 const router = express.Router();
 const { Project } = require('../models');
