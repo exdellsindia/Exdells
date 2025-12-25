@@ -2,6 +2,13 @@ const express = require('express')
 const router = express.Router()
 const { Project } = require('../models')
 
+// Project routes for Exdells Website
+const express = require('express');
+const router = express.Router();
+const { Project } = require('../models');
+
+// GET /api/projects
+// Returns all solar projects
 router.get('/', async (req, res)=>{
   const projects = await Project.findAll({ order: [['createdAt','DESC']] })
   res.json(projects)

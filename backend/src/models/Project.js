@@ -11,16 +11,26 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
-    password: {
+    city: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
+    },
+    capacity: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   });
 
+  // Sequelize model for Project (solar projects)
+  // Define Project table structure
+  // Return model for use in app
   return Project;
 };

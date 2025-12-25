@@ -1,5 +1,8 @@
+
+// Email notification helpers for Exdells Website
 const nodemailer = require('nodemailer');
 
+// Send admin notification email with lead details
 async function sendLeadNotification(lead) {
   if (!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) return;
   const port = Number(process.env.SMTP_PORT) || 587;
@@ -13,10 +16,8 @@ async function sendLeadNotification(lead) {
       pass: process.env.SMTP_PASS
     }
   });
-
   const from = process.env.EMAIL_FROM || process.env.SMTP_USER;
   const to = process.env.EMAIL_TO || process.env.SMTP_USER;
-
   const html = `
     <h2>New Lead Received</h2>
     <p><strong>Name:</strong> ${lead.name}</p>
@@ -29,14 +30,12 @@ async function sendLeadNotification(lead) {
     ${lead.attachment ? `<p><strong>Attachment:</strong> <a href="${lead.attachment}" target="_blank">Open</a></p>` : ''}
     <p style="font-size:0.85rem;color:#666">This is an automated notification from Exdells Website.</p>
   `;
-
   const mailOptions = {
     from,
     to,
     subject: `New Lead: ${lead.name} (${lead.city || 'N/A'})`,
     html
   };
-
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
@@ -44,6 +43,7 @@ async function sendLeadNotification(lead) {
   }
 }
 
+// Send confirmation email to user
 async function sendLeadConfirmation(lead) {
   if (!lead.email || !(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) return;
   const port = Number(process.env.SMTP_PORT) || 587;
@@ -57,10 +57,8 @@ async function sendLeadConfirmation(lead) {
       pass: process.env.SMTP_PASS
     }
   });
-
   const from = process.env.EMAIL_FROM || process.env.SMTP_USER;
   const to = lead.email;
-
   const html = `
     <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:24px 16px;background:#f8fafc;border-radius:12px;">
       <h2 style="color:#0F4C81;">Thank you for contacting Exdells India Pvt. Ltd.</h2>
@@ -76,14 +74,12 @@ async function sendLeadConfirmation(lead) {
       <div style="margin-top:24px;font-size:13px;color:#888;">This is an automated confirmation. For urgent queries, call us at +91 89558 08315.</div>
     </div>
   `;
-
   const mailOptions = {
     from,
     to,
     subject: 'Thank you for contacting Exdells India Pvt. Ltd.',
     html
   };
-
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
@@ -91,4 +87,5 @@ async function sendLeadConfirmation(lead) {
   }
 }
 
+// Export email helpers
 module.exports = { sendLeadNotification, sendLeadConfirmation };

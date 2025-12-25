@@ -1,7 +1,8 @@
-// backend/src/lib/alertEmail.js
-// Sends alert emails for weekly alert opt-in or one-time alert
+
+// Email helpers for weekly alert opt-in and one-time alert
 const nodemailer = require('nodemailer');
 
+// Send weekly alert opt-in email to user
 async function sendWeeklyAlertOptInEmail(lead) {
   if (!lead.email || !(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) return;
   const port = Number(process.env.SMTP_PORT) || 587;
@@ -37,6 +38,7 @@ async function sendWeeklyAlertOptInEmail(lead) {
   } catch (err) {}
 }
 
+// Send one-time alert email to user
 async function sendOneTimeAlertEmail(lead) {
   if (!lead.email || !(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) return;
   const port = Number(process.env.SMTP_PORT) || 587;
@@ -71,4 +73,5 @@ async function sendOneTimeAlertEmail(lead) {
   } catch (err) {}
 }
 
+// Export email helpers
 module.exports = { sendWeeklyAlertOptInEmail, sendOneTimeAlertEmail };

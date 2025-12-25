@@ -16,11 +16,16 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique: true
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
+      passwordHash: {
+        type: DataTypes.STRING,
+        allowNull: false
+      }
   });
+
+    // Return model for use in app
+    return User;
+  };
+  // Sequelize model for User (authentication)
 
   return User;
 };

@@ -2,25 +2,33 @@
 const { startWeeklyAlertsJob } = require('./src/jobs/weeklyAlerts');
   // Start the weekly WhatsFlows alerts cron job
   startWeeklyAlertsJob();
+
+// Load environment variables from .env file
 require('dotenv').config();
+
+// Import core modules
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const { sequelize } = require('./src/models');
 
+// Import route modules
 const authRoutes = require('./src/routes/auth');
 const leadRoutes = require('./src/routes/leads');
 const projectRoutes = require('./src/routes/projects');
 const chatRoutes = require('./src/routes/chat');
 const uploadsRoutes = require('./src/routes/uploads');
 
+// Initialize Express app
 const app = express();
-app.use(helmet());
-app.use(express.json({ limit: '15mb' }));
-app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
-// ---------- CORS FIX ----------
+// Security middleware
+app.use(helmet()); // Adds security headers
+app.use(express.json({ limit: '15mb' })); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true, limit: '15mb' })); // Parse URL-encoded bodies
+
+// CORS configuration: restricts allowed origins for API requests
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -45,7 +53,7 @@ app.use(
   })
 );
 
-// ---------- ROOT ROUTE (Fix “Cannot GET /”) ----------
+// Root route: health check and API info
 app.get('/', (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -54,49 +62,47 @@ app.get('/', (req, res) => {
   });
 });
 
-// ---------- HEALTH CHECK (Render internal ping) ----------
+// Health check route for Render.com
 app.get('/health', (req, res) => {
   res.status(200).send("OK");
 });
 
-// ---------- ROUTES ----------
-app.use('/api/auth', authRoutes);
-app.use('/api/leads', leadRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/uploads', uploadsRoutes);
+// Mount API routes
+app.use('/api/auth', authRoutes); // User authentication
+app.use('/api/leads', leadRoutes); // Lead form and notifications
+app.use('/api/projects', projectRoutes); // Project info
+app.use('/api/chat', chatRoutes); // Chatbot API
+app.use('/api/uploads', uploadsRoutes); // File uploads
 
-// ---------- STATIC UPLOADS ----------
+// Serve static uploads (images, docs)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ---------- ERROR HANDLER ----------
+// Error handler: logs errors and returns safe responses
 app.use((err, req, res, next) => {
-  // Log full stack for debugging
   console.error("SERVER ERROR:", err.stack || err);
-
-  // Return detailed error in non-production for debugging convenience
   if (process.env.NODE_ENV !== 'production') {
     return res.status(500).json({ error: err.message, stack: err.stack });
   }
-
-  // Production-safe response
   res.status(500).json({ error: 'Server Error' });
 });
 
-// ---------- PORT ----------
+// Set port from environment or default
 const PORT = process.env.PORT || 4000;
 
+// Start the server and connect to the database
 const startServer = async () => {
   try {
-    // In production we require DATABASE_URL to be set (Supabase/Postgres)
+    // Require DATABASE_URL in production
     if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
-      console.error('❌ DATABASE_URL is required in production. Please set it to your Supabase / Postgres connection string.')
-      process.exit(1)
+      console.error('❌ DATABASE_URL is required in production. Please set it to your Supabase / Postgres connection string.');
+      process.exit(1);
     }
 
+    // Authenticate DB connection
     await sequelize.authenticate();
     console.log("✔ Database Connected");
 
+    // Sync DB in development only
     if (process.env.NODE_ENV !== 'production') {
       await sequelize.sync({ alter: true });
       console.log("✔ DB Synced (dev mode)");
@@ -104,6 +110,7 @@ const startServer = async () => {
       console.log("✔ Production Mode - DB Sync Disabled (use migrations)");
     }
 
+    // Start Express server
     app.listen(PORT, () => console.log(`🚀 Server running on PORT: ${PORT}`));
   } catch (error) {
     console.error("❌ DB Connection Failed:", error);
@@ -111,4 +118,5 @@ const startServer = async () => {
   }
 };
 
+// Entry point
 startServer();

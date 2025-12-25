@@ -4,7 +4,10 @@ const axios = require('axios')
 
 // POST /api/chat
 // body: { message: string, messages?: [{role, content}] }
+// Chatbot API route (stub)
+// This endpoint handles incoming chat messages and integrates with an AI service.
 router.post('/', async (req, res) => {
+  // Extract message and optional messages array from request body
   try {
     const { message, messages } = req.body
     if (!message && (!Array.isArray(messages) || messages.length === 0)) {
@@ -45,4 +48,5 @@ router.post('/', async (req, res) => {
   }
 })
 
+// Export router for use in server.js
 module.exports = router

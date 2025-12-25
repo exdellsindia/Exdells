@@ -1,6 +1,9 @@
+
+// Sequelize model for Lead (form submissions)
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
+  // Define Lead table structure
   const Lead = sequelize.define('Lead', {
     id: {
       type: DataTypes.INTEGER,
@@ -57,5 +60,6 @@ module.exports = (sequelize) => {
     }
   });
 
+  // Return model for use in app
   return Lead;
 };

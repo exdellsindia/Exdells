@@ -1,7 +1,8 @@
-// backend/src/lib/whatsflows.js
-// Send WhatsApp message using WhatsFlows API
+
+// WhatsFlows integration for sending WhatsApp messages
 const axios = require('axios');
 
+// WhatsFlows API endpoint and key
 const WF_API_URL = 'https://crmapi.whatsflows.com/api/v1/message/send';
 const WF_API_KEY = process.env.WHATSFLOWS_API_KEY;
 
@@ -9,7 +10,7 @@ if (!WF_API_KEY) {
   console.warn('⚠️  WHATSFLOWS_API_KEY environment variable is not set. WhatsFlows messages will fail.');
 }
 
-// Send WhatsApp and SMS via WhatsFlows after form submission
+// Send WhatsApp message via WhatsFlows
 async function sendWhatsFlowsMessage(phone, message) {
   if (!phone || !message) return;
   try {
@@ -31,10 +32,11 @@ async function sendWhatsFlowsMessage(phone, message) {
   }
 }
 
-// Helper to send a solar-branded thank you message to the user
+// Helper: send a solar-branded thank you message to the user
 async function sendUserSolarThankYou(phone, name) {
   const msg = `Thank you, ${name}, for reaching out to Exdells India Pvt. Ltd.!\nOur solar experts will contact you soon to help you save with solar energy.\n- Exdells Solar Team`;
   await sendWhatsFlowsMessage(phone, msg);
 }
 
+// Export functions
 module.exports = { sendWhatsFlowsMessage, sendUserSolarThankYou };

@@ -4,6 +4,8 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Leads', {
+        // Sequelize migration: create Leads table for Exdells Website
+        // This migration sets up the initial schema for the leads table.
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
