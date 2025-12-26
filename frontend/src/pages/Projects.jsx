@@ -5,17 +5,20 @@ const caseStudies = [
   {
     title: 'Jaipur Residence • 6 kW Hybrid',
     impact: '₹8,500 average monthly savings',
-    detail: 'Mono PERC panels on RCC roof with hybrid inverter and battery-ready wiring. PM Surya Ghar subsidy disbursed in 42 days.'
+    detail: 'Mono PERC panels on RCC roof with hybrid inverter and battery-ready wiring. PM Surya Ghar subsidy disbursed in 42 days.',
+    image: '/projects/solar1.jpg'
   },
   {
     title: 'Udaipur Hospital • 80 kW EPC',
     impact: '30% reduction in diesel genset usage',
-    detail: 'Complete electrical audit, LT panel upgrade, and SCADA-integrated monitoring for facility administrators.'
+    detail: 'Complete electrical audit, LT panel upgrade, and SCADA-integrated monitoring for facility administrators.',
+    image: '/projects/solar2.jpg'
   },
   {
     title: 'Jodhpur School • 35 kW Rooftop',
     impact: 'Funded via EMI with 4-year payback',
-    detail: 'Structured mounting on metal shed, child-safe wiring conduits, and annual maintenance program.'
+    detail: 'Structured mounting on metal shed, child-safe wiring conduits, and annual maintenance program.',
+    image: '/projects/solar3.jpg'
   }
 ]
 
@@ -44,10 +47,20 @@ export default function Projects() {
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {caseStudies.map((study) => (
-            <article key={study.title} className="rounded-3xl border border-exdellsBlue/10 bg-white p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-exdellsBlue/70">{study.title}</p>
-              <p className="mt-3 text-lg font-semibold text-exdellsCharcoal">{study.impact}</p>
-              <p className="mt-2 text-sm text-slate-600">{study.detail}</p>
+            <article key={study.title} className="rounded-3xl border border-exdellsBlue/10 bg-white p-0 shadow-sm flex flex-col overflow-hidden">
+              {study.image && (
+                <img
+                  src={study.image}
+                  alt={study.title}
+                  className="w-full h-48 object-cover object-center"
+                  loading="lazy"
+                />
+              )}
+              <div className="p-6 flex-1 flex flex-col">
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-exdellsBlue/70">{study.title}</p>
+                <p className="mt-3 text-lg font-semibold text-exdellsCharcoal">{study.impact}</p>
+                <p className="mt-2 text-sm text-slate-600">{study.detail}</p>
+              </div>
             </article>
           ))}
         </div>
