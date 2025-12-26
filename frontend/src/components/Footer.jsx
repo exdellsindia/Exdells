@@ -16,7 +16,7 @@ const quickLinks = [
 // Office locations
 const offices = [
   {
-    title: 'Head Office',
+    title: 'Registered Office',
     detail: 'C-98, Royal City, Kalwar Road, Jaipur, Rajasthan 302012'
   },
   {
