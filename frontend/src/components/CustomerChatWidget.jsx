@@ -71,7 +71,7 @@ export default function CustomerChatWidget() {
       )}
       {/* Chat widget */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-80 max-w-xs bg-[#0A223D] rounded-2xl shadow-2xl border border-[#FFC857] flex flex-col overflow-hidden animate-fadeIn">
+        <div className="fixed bottom-0 left-0 right-0 z-50 w-full sm:left-auto sm:right-6 sm:bottom-6 sm:w-80 sm:max-w-xs bg-[#0A223D] rounded-t-2xl sm:rounded-2xl shadow-2xl border border-[#FFC857] flex flex-col overflow-hidden animate-fadeIn pb-safe">
           {/* Header */}
           <div className="flex items-center gap-2 bg-[#0A223D] px-4 py-3 border-b border-[#FFC857]">
             {/* Logo or fallback */}
@@ -132,7 +132,7 @@ export default function CustomerChatWidget() {
             </div>
           ) : (
             <form
-              className="flex items-center gap-2 px-3 py-2 bg-[#0A223D] border-t border-[#FFC857]"
+              className="flex items-center gap-2 px-3 py-2 bg-[#0A223D] border-t border-[#FFC857] w-full"
               onSubmit={e => {
                 e.preventDefault();
                 send();
