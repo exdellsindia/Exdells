@@ -1,9 +1,23 @@
-const transporter = require('./emailTransporter');
+const nodemailer = require('nodemailer');
+
+function createTransporter() {
+  const port = Number(process.env.SMTP_PORT) || 587;
+  const secure = port === 465;
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port,
+    secure,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+}
 
 // WEEKLY ALERT OPT-IN
 async function sendWeeklyAlertOptInEmail(lead) {
   if (!lead.email) return;
-
+  const transporter = createTransporter();
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
@@ -28,7 +42,7 @@ async function sendWeeklyAlertOptInEmail(lead) {
 // ONE-TIME ALERT
 async function sendOneTimeAlertEmail(lead) {
   if (!lead.email) return;
-
+  const transporter = createTransporter();
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
