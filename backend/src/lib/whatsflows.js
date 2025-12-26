@@ -1,42 +1,58 @@
-
-// WhatsFlows integration for sending WhatsApp messages
 const axios = require('axios');
 
-// WhatsFlows API endpoint and key
 const WF_API_URL = 'https://crmapi.whatsflows.com/api/v1/message/send';
 const WF_API_KEY = process.env.WHATSFLOWS_API_KEY;
 
-if (!WF_API_KEY) {
-  console.warn('⚠️  WHATSFLOWS_API_KEY environment variable is not set. WhatsFlows messages will fail.');
-}
+async function sendWhatsFlowsTemplate(phone, template, params = []) {
+  if (!phone || !template) return;
 
-// Send WhatsApp message via WhatsFlows
-async function sendWhatsFlowsMessage(phone, message) {
-  if (!phone || !message) return;
+  const formattedPhone = phone.replace(/\D/g, '');
+
   try {
-    // WhatsFlows expects phone as 91XXXXXXXXXX (no +, no spaces)
-    const formattedPhone = phone.replace(/\D/g, '');
-    const res = await axios.post(WF_API_URL, {
-      phone: formattedPhone,
-      message,
-      channel: 'whatsapp'
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': WF_API_KEY
+    const res = await axios.post(
+      WF_API_URL,
+      {
+        phone: formattedPhone,
+        template_name: template,
+        broadcast_name: template,
+        parameters: params
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': WF_API_KEY
+        }
       }
-    });
+    );
+
     return res.data;
   } catch (err) {
-    console.error('WhatsFlows API error:', err.response?.data || err.message);
+    console.error(
+      'WhatsFlows Template API error:',
+      err.response?.data || err.message
+    );
   }
 }
 
-// Helper: send a solar-branded thank you message to the user
+// Instant thank you (can stay text-based)
 async function sendUserSolarThankYou(phone, name) {
-  const msg = `Thank you, ${name}, for reaching out to Exdells India Pvt. Ltd.!\nOur solar experts will contact you soon to help you save with solar energy.\n- Exdells Solar Team`;
-  await sendWhatsFlowsMessage(phone, msg);
+  const msg = `Thank you, ${name}, for reaching out to Exdells India Pvt. Ltd.!
+Our solar experts will contact you soon.
+- Exdells Solar Team`;
+
+  return sendWhatsFlowsMessage(phone, msg);
 }
 
-// Export functions
-module.exports = { sendWhatsFlowsMessage, sendUserSolarThankYou };
+// Weekly update (TEMPLATE – SAFE)
+async function sendWeeklySolarUpdate(phone, name) {
+  return sendWhatsFlowsTemplate(
+    phone,
+    'exdells_weekly_update',
+    [name]
+  );
+}
+
+module.exports = {
+  sendWeeklySolarUpdate,
+  sendUserSolarThankYou
+};

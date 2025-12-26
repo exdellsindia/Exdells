@@ -1,27 +1,45 @@
-
-// Scheduled job to send weekly WhatsFlows alerts to opted-in users
+// Scheduled job to send weekly WhatsApp updates via WhatsFlows
 const cron = require('node-cron');
 const { Lead } = require('../models');
-const { sendUserSolarThankYou } = require('../lib/whatsflows');
+const { sendWeeklySolarUpdate } = require('../lib/whatsflows');
 
 function startWeeklyAlertsJob() {
-  // Schedule: Every Monday at 10:00 AM IST
-  cron.schedule('0 4 * * 1', async () => {
-    try {
-      // Find all leads who opted in for weekly alerts
-      const leads = await Lead.findAll({ where: { optInAlerts: true } });
-      for (const lead of leads) {
-        // Send WhatsFlows thank you message
-        await sendUserSolarThankYou(lead.phone, lead.name);
+  // Every Monday at 10:00 AM IST
+  cron.schedule(
+    '0 10 * * 1',
+    async () => {
+      try {
+        const leads = await Lead.findAll({
+          where: {
+            consent: true,
+            subscribed: true
+          }
+        });
+
+        for (const lead of leads) {
+          await sendWeeklySolarUpdate(
+            lead.phone,
+            lead.name
+          );
+
+          // small delay to avoid API rate limit
+          await new Promise(r => setTimeout(r, 300));
+        }
+
+        console.log(
+          `✅ Weekly WhatsApp updates sent to ${leads.length} users`
+        );
+      } catch (err) {
+        console.error(
+          '❌ Weekly WhatsApp alert job failed:',
+          err
+        );
       }
-      console.log(`Weekly WhatsFlows alerts sent to ${leads.length} users.`);
-    } catch (err) {
-      console.error('Weekly WhatsFlows alert job failed:', err);
+    },
+    {
+      timezone: 'Asia/Kolkata'
     }
-  }, {
-    timezone: 'Asia/Kolkata'
-  });
+  );
 }
 
-// Export job starter
 module.exports = { startWeeklyAlertsJob };
