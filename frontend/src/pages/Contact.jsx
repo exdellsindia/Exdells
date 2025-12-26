@@ -5,7 +5,7 @@ import CTASection from '../components/CTASection'
 const contactInfo = [
   { label: 'Phone / WhatsApp', value: '+91 89558 08315', link: 'tel:+918955808315' },
   { label: 'Email', value: 'info@exdells.com', link: 'mailto:info@exdells.com' },
-  { label: 'Service Hours', value: '9:00 AM – 8:00 PM (Mon–Sun)' }
+  { label: 'Service Hours', value: '10:00 AM – 7:00 PM (Mon–Sat)' }
 ]
 
 const offices = [

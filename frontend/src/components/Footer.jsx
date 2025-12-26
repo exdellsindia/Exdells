@@ -127,7 +127,7 @@ export default function Footer() {
                 info@exdells.com
               </a>
             </p>
-            <p>Service Hours: 9:00 AM – 8:00 PM IST</p>
+            <p>Service Hours: 10:00 AM – 7:00 PM IST</p>
           </div>
         </div>
 

@@ -241,7 +241,7 @@ export default function Home() {
                 <div className="mt-3 text-xl font-semibold">
                   <a href="tel:+919694326431" className="text-exdellsYellow">+91 89558 08315</a>
                 </div>
-                <p className="text-sm text-white/70">Call or WhatsApp (9:00 AM – 8:00 PM)</p>
+                <p className="text-sm text-white/70">Call or WhatsApp (10:00 AM – 7:00 PM)</p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
