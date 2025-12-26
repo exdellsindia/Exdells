@@ -65,7 +65,7 @@ async function sendWhatsFlowsMessage(phone, message) {
 async function sendUserSolarThankYou(phone, name) {
   const msg = `Thank you, ${name}, for reaching out to Exdells India Pvt. Ltd.!
 Our solar experts will contact you soon.
-    const msg = `Thank you, ${name}, for reaching out to Exdells India Pvt. Ltd.!\nOur solar experts will contact you soon.\n- Exdells Solar Team`;
+- Exdells Solar Team`;
   return sendWhatsFlowsMessage(phone, msg);
 }
 
