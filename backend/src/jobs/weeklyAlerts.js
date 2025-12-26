@@ -1,13 +1,25 @@
-// Scheduled job to send weekly WhatsApp updates via WhatsFlows
+// Weekly WhatsApp + Email Alerts (Cron Job)
 const cron = require('node-cron');
 const { Lead } = require('../models');
 const { sendWeeklySolarUpdate } = require('../lib/whatsflows');
+const { sendWeeklyAlertOptInEmail } = require('../lib/alertEmail');
+
+let jobStarted = false;
 
 function startWeeklyAlertsJob() {
+  // Prevent duplicate cron on server restart
+  if (jobStarted) {
+    console.log('⚠️ Weekly alert cron already running');
+    return;
+  }
+  jobStarted = true;
+
   // Every Monday at 10:00 AM IST
   cron.schedule(
     '0 10 * * 1',
     async () => {
+      console.log('⏳ Weekly alert job started');
+
       try {
         const leads = await Lead.findAll({
           where: {
@@ -17,22 +29,37 @@ function startWeeklyAlertsJob() {
         });
 
         for (const lead of leads) {
-          await sendWeeklySolarUpdate(
-            lead.phone,
-            lead.name
-          );
+          try {
+            // 1️⃣ WhatsApp update
+            if (lead.phone) {
+              await sendWeeklySolarUpdate(
+                lead.phone,
+                lead.name
+              );
+            }
 
-          // small delay to avoid API rate limit
-          await new Promise(r => setTimeout(r, 300));
+            // 2️⃣ Email fallback / support
+            if (lead.email) {
+              await sendWeeklyAlertOptInEmail(lead);
+            }
+
+            // Delay to avoid rate limits
+            await new Promise(r => setTimeout(r, 400));
+          } catch (userErr) {
+            console.error(
+              `❌ Weekly alert failed for ${lead.email || lead.phone}:`,
+              userErr.message
+            );
+          }
         }
 
         console.log(
-          `✅ Weekly WhatsApp updates sent to ${leads.length} users`
+          `✅ Weekly alerts sent to ${leads.length} users`
         );
       } catch (err) {
         console.error(
-          '❌ Weekly WhatsApp alert job failed:',
-          err
+          '❌ Weekly alert cron job failed:',
+          err.message
         );
       }
     },
@@ -40,6 +67,8 @@ function startWeeklyAlertsJob() {
       timezone: 'Asia/Kolkata'
     }
   );
+
+  console.log('✅ Weekly alert cron scheduled (Monday 10 AM IST)');
 }
 
 module.exports = { startWeeklyAlertsJob };
