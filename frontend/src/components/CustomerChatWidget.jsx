@@ -17,6 +17,7 @@ export default function CustomerChatWidget() {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (open && bottomRef.current) bottomRef.current.scrollIntoView({ behavior: 'smooth' });
