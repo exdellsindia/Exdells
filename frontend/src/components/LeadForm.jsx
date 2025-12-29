@@ -56,22 +56,27 @@ export default function LeadForm() {
   const submit = async (e) => {
     e.preventDefault();
     setStatus(null);
+    setStatusMessage('');
     setLoading(true);
     try {
       await api.post('/api/leads', { ...form }, {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 7000
+        timeout: 12000 // Increased timeout for slow connections
       });
       setStatus('success');
       setForm(initialForm);
     } catch (err) {
-      console.error('Submit error:', err)
-      console.error('Server response data:', err?.response?.data)
-      const serverMessage = normalizeError(err).slice(0, 500)
-      setStatusMessage(serverMessage)
-      setStatus('error')
+      let userMessage = 'Something went wrong. Please call +91 96943 26431 or try again.';
+      if (err.code === 'ECONNABORTED') {
+        userMessage = 'The request timed out. Please check your internet connection or try again in a moment.';
+      }
+      const serverMessage = normalizeError(err).slice(0, 500);
+      setStatusMessage(serverMessage !== userMessage ? serverMessage : '');
+      setStatus('error');
+      console.error('Submit error:', err);
+      console.error('Server response data:', err?.response?.data);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
