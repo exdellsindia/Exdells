@@ -1,7 +1,7 @@
 const axios = require('axios');
 
-const WF_API_URL = 'https://crmapi.whatsflows.com/api/meta/v19.0/704852016046522/messages';
-const WF_API_KEY = process.env.WHATSFLOWS_API_KEY;
+const WF_API_URL = 'https://graph.facebook.com/v19.0/704852016046522/messages';
+const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
 
 async function sendWhatsFlowsTemplate(phone, template, params = []) {
   if (!phone || !template) return;
@@ -12,19 +12,22 @@ async function sendWhatsFlowsTemplate(phone, template, params = []) {
     const res = await axios.post(
       WF_API_URL,
       {
-        phone: formattedPhone,
-        template_name: template,
-        broadcast_name: template,
-        parameters: params
+        messaging_product: 'whatsapp',
+        to: formattedPhone,
+        type: 'template',
+        template: {
+          name: template,
+          language: { code: 'en_US' },
+          components: params
+        }
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          'api-key': WF_API_KEY
+          'Authorization': `Bearer ${META_ACCESS_TOKEN}`
         }
       }
     );
-
     return res.data;
   } catch (err) {
     console.error(
@@ -42,13 +45,17 @@ async function sendWhatsFlowsMessage(phone, message) {
     const res = await axios.post(
       WF_API_URL,
       {
-        phone: formattedPhone,
-        message: message
+        messaging_product: 'whatsapp',
+        to: formattedPhone,
+        type: 'text',
+        text: {
+          body: message
+        }
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          'api-key': WF_API_KEY
+          'Authorization': `Bearer ${META_ACCESS_TOKEN}`
         }
       }
     );
