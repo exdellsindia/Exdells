@@ -49,13 +49,16 @@ router.post('/', async (req, res) => {
           sendOneTimeAlertEmail(lead);
         }
       }
-      // WhatsFlows WhatsApp/SMS message to user (solar-branded)
-      if (lead.phone && lead.optInAlerts) {
-        // WhatsFlows message sending removed as requested
+      // WhatsFlows WhatsApp message to user (thank you)
+      if (lead.phone) {
+        const { sendUserSolarThankYou } = require('../lib/whatsflows');
+        sendUserSolarThankYou(lead.phone, lead.name);
       }
-      // WhatsFlows WhatsApp admin alert (to Exdells team)
-      {
-        // WhatsFlows admin alert removed as requested
+      // WhatsFlows WhatsApp message to admin with lead data
+      if (process.env.WHATSFLOWS_ADMIN_PHONE) {
+        const { sendWhatsFlowsMessage } = require('../lib/whatsflows');
+        const adminMsg = `New Lead Received:\nName: ${lead.name}\nPhone: ${lead.phone}\nEmail: ${lead.email}\nCity: ${lead.city}\nCapacity: ${lead.capacity}\nNotes: ${lead.notes}`;
+        sendWhatsFlowsMessage(process.env.WHATSFLOWS_ADMIN_PHONE, adminMsg);
       }
     } catch (userAlertErr) {
       console.error('User confirmation alert failed (non-blocking):', userAlertErr);
