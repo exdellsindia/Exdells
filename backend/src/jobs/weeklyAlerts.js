@@ -21,10 +21,10 @@ function startWeeklyAlertsJob() {
       console.log('⏳ Weekly alert job started');
 
       try {
+        // Only send to leads who opted in for alerts
         const leads = await Lead.findAll({
           where: {
-            consent: true,
-            subscribed: true
+            optInAlerts: true
           }
         });
 
@@ -37,11 +37,12 @@ function startWeeklyAlertsJob() {
                 lead.name
               );
             }
-
             // 2️⃣ Email fallback / support
             if (lead.email) {
               await sendWeeklyAlertOptInEmail(lead);
             }
+
+            // (Optional) Add SMS logic here if needed
 
             // Delay to avoid rate limits
             await new Promise(r => setTimeout(r, 400));
@@ -62,9 +63,6 @@ function startWeeklyAlertsJob() {
           err.message
         );
       }
-    },
-    {
-      timezone: 'Asia/Kolkata'
     }
   );
 
