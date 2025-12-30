@@ -1,24 +1,10 @@
-const nodemailer = require('nodemailer');
-
-function createTransporter() {
-  const port = Number(process.env.SMTP_PORT) || 587;
-  const secure = port === 465;
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port,
-    secure,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
-}
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // ADMIN ALERT EMAIL
 async function sendLeadNotification(lead) {
-  const transporter = createTransporter();
   try {
-    await transporter.sendMail({
+    await sgMail.send({
       from: process.env.EMAIL_FROM,
       to: process.env.EMAIL_TO,
       subject: `New Lead: ${lead.name} (${lead.city || 'N/A'})`,
@@ -43,9 +29,8 @@ async function sendLeadNotification(lead) {
 // USER WELCOME EMAIL
 async function sendLeadConfirmation(lead) {
   if (!lead.email) return;
-  const transporter = createTransporter();
   try {
-    await transporter.sendMail({
+    await sgMail.send({
       from: process.env.EMAIL_FROM,
       to: lead.email,
       subject: "Thank you for contacting Exdells India Pvt. Ltd.",
