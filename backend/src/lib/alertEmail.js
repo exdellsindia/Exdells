@@ -14,7 +14,9 @@ async function sendWeeklyAlertOptInEmail(lead) {
           <h2 style="color:#0F4C81;">Weekly Solar Alerts Enabled</h2>
           <p>Dear ${lead.name},</p>
           <p>You are now subscribed to weekly solar tips, updates & offers from Exdells.</p>
-          <p>You can unsubscribe anytime.</p>
+          <p style="margin-top:18px;">
+            <b>Unsubscribe:</b> If you no longer wish to receive weekly solar alerts, simply reply to this email with <b>UNSUBSCRIBE</b> or click <a href="mailto:info@exdells.com?subject=Unsubscribe%20Weekly%20Solar%20Alerts">here</a> to unsubscribe instantly.
+          </p>
           <small>Team Exdells | +91 89558 08315</small>
         </div>
       `
